@@ -386,11 +386,13 @@ MonoBehaviour:
   target: {fileID: 1705636952}
   playerController: {fileID: 1705636953}
   playerInput: {fileID: 1705636954}
+  firstPersonVisibilityRoot: {fileID: 1579240700}
   lookActionName: Look
   toggleCameraActionName: ToggleCamera
   mouseSensitivity: 1.5
   followDistance: 5
-  heightOffset: 1
+  firstPersonHeight: 1.15
+  thirdPersonHeight: 1
   startInFirstPerson: 0
   lockCursorOnStart: 1
   minPitch: -40
@@ -1383,6 +1385,7 @@ GameObject:
   - component: {fileID: 2019458151}
   - component: {fileID: 2019458150}
   - component: {fileID: 2019458149}
+  - component: {fileID: 2019458152}
   m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
@@ -1484,6 +1487,21 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2019458147}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &2019458152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2019458147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c30c06ce275c4f648bfb61e7a5aa7a80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FirstPersonHiddenVisual
+  renderersToHide:
+  - {fileID: 2019458150}
+  - {fileID: 1138216885}
 --- !u!1 &2101150634
 GameObject:
   m_ObjectHideFlags: 0
