@@ -11,12 +11,14 @@ public class ThirdPersonController : MonoBehaviour
     [SerializeField] private float rotationSmoothTime = 0.12f;
 
     [Header("Gravity")]
+    [SerializeField] private float jumpHeight = 1.5f;
     [SerializeField] private float gravity = -20f;
     [SerializeField] private float groundedGravity = -2f;
 
     [Header("Input Actions")]
     [SerializeField] private string moveActionName = "Move";
     [SerializeField] private string sprintActionName = "Sprint";
+    [SerializeField] private string jumpActionName = "Jump";
 
     [Header("Camera")]
     [SerializeField] private Transform cameraTransform;
@@ -25,6 +27,7 @@ public class ThirdPersonController : MonoBehaviour
     private PlayerInput playerInput;
     private InputAction moveAction;
     private InputAction sprintAction;
+    private InputAction jumpAction;
 
     private float verticalVelocity;
     private float currentRotationVelocity;
@@ -50,11 +53,12 @@ public class ThirdPersonController : MonoBehaviour
 
         moveAction = playerInput.actions.FindAction(moveActionName);
         sprintAction = playerInput.actions.FindAction(sprintActionName);
+        jumpAction = playerInput.actions.FindAction(jumpActionName);
 
-        if (moveAction == null || sprintAction == null)
+        if (moveAction == null || sprintAction == null || jumpAction == null)
         {
             Debug.LogError(
-                $"{nameof(ThirdPersonController)} could not find '{moveActionName}' and/or '{sprintActionName}' in the PlayerInput actions asset.",
+                $"{nameof(ThirdPersonController)} could not find '{moveActionName}', '{sprintActionName}', and/or '{jumpActionName}' in the PlayerInput actions asset.",
                 this);
             enabled = false;
         }
@@ -64,17 +68,19 @@ public class ThirdPersonController : MonoBehaviour
     {
         moveAction?.Enable();
         sprintAction?.Enable();
+        jumpAction?.Enable();
     }
 
     private void OnDisable()
     {
         moveAction?.Disable();
         sprintAction?.Disable();
+        jumpAction?.Disable();
     }
 
     private void Update()
     {
-        if (moveAction == null || sprintAction == null)
+        if (moveAction == null || sprintAction == null || jumpAction == null)
         {
             return;
         }
@@ -83,7 +89,7 @@ public class ThirdPersonController : MonoBehaviour
         Vector3 moveDirection = GetCameraRelativeMoveDirection(moveInput);
 
         RotateTowardMovement(moveDirection);
-        ApplyGravity();
+        ApplyJumpAndGravity();
 
         float speed = sprintAction.IsPressed() ? sprintSpeed : walkSpeed;
         Vector3 velocity = moveDirection * speed;
@@ -129,14 +135,22 @@ public class ThirdPersonController : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, smoothedAngle, 0f);
     }
 
-    private void ApplyGravity()
+    private void ApplyJumpAndGravity()
     {
-        if (characterController.isGrounded && verticalVelocity < 0f)
+        bool isGrounded = characterController.isGrounded;
+
+        if (isGrounded && verticalVelocity < 0f)
         {
             verticalVelocity = groundedGravity;
-            return;
         }
 
-        verticalVelocity += gravity * Time.deltaTime;
+        if (isGrounded && jumpAction.WasPressedThisFrame())
+        {
+            verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        }
+        else if (!isGrounded)
+        {
+            verticalVelocity += gravity * Time.deltaTime;
+        }
     }
 }
