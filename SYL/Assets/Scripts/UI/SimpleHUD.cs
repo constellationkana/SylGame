@@ -9,6 +9,7 @@ public class SimpleHUD : MonoBehaviour
     [Header("Text Labels")]
     [SerializeField] private TMP_Text collectiblesText;
     [SerializeField] private TMP_Text objectiveText;
+    [SerializeField] private GameObject gameOverPanel;
 
     [Header("Scene References")]
     [SerializeField] private CollectibleManager collectibleManager;
@@ -18,6 +19,11 @@ public class SimpleHUD : MonoBehaviour
     private bool isSubscribedToCollectibles;
     private bool isSubscribedToObjective;
     private bool isSubscribedToHealth;
+
+    private void Awake()
+    {
+        SetGameOverPanelVisible(false);
+    }
 
     private void OnEnable()
     {
@@ -61,6 +67,7 @@ public class SimpleHUD : MonoBehaviour
     {
         RefreshCollectibles();
         RefreshObjective();
+        RefreshGameOverPanel();
     }
 
     private void ConnectToSceneSystems(bool showWarnings)
@@ -166,9 +173,31 @@ public class SimpleHUD : MonoBehaviour
         RefreshObjective();
     }
 
-    private void HandleHealthChanged(int _)
+    private void HandleHealthChanged(int currentHealth)
     {
         RefreshObjective();
+        SetGameOverPanelVisible(currentHealth <= 0);
+    }
+
+    private void RefreshGameOverPanel()
+    {
+        if (playerHealth == null)
+        {
+            SetGameOverPanelVisible(false);
+            return;
+        }
+
+        SetGameOverPanelVisible(playerHealth.CurrentHealth <= 0);
+    }
+
+    private void SetGameOverPanelVisible(bool isVisible)
+    {
+        if (gameOverPanel == null)
+        {
+            return;
+        }
+
+        gameOverPanel.SetActive(isVisible);
     }
 
     private void UpdateCollectiblesText(int collectedCount)
