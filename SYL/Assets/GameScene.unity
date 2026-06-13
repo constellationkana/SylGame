@@ -381,8 +381,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -65, y: -30}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: -170, y: -55}
+  m_SizeDelta: {x: 320, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &187712294
 GameObject:
@@ -1661,6 +1661,7 @@ GameObject:
   - component: {fileID: 987924269}
   - component: {fileID: 987924273}
   - component: {fileID: 987924274}
+  - component: {fileID: 987924275}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -1683,7 +1684,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1799,6 +1800,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDetection
   player: {fileID: 1705636952}
   detectionRadius: 3
+--- !u!114 &987924275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 987924268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e84dd78cb3d4c8d9e4dbb70f5f87f31, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyContactDamage
+  damageAmount: 1
 --- !u!1 &1138216882
 GameObject:
   m_ObjectHideFlags: 0
@@ -2127,6 +2141,7 @@ MonoBehaviour:
   objectiveText: {fileID: 72172095}
   collectibleManager: {fileID: 1627124859}
   collectibleObjective: {fileID: 278886788}
+  playerHealth: {fileID: 1705636956}
 --- !u!114 &1577265646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2687,6 +2702,7 @@ GameObject:
   - component: {fileID: 1705636955}
   - component: {fileID: 1705636954}
   - component: {fileID: 1705636953}
+  - component: {fileID: 1705636956}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -2869,6 +2885,21 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1705636956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1705636948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c2d1e2d7f684f5b9c0f387ab1d4c2e0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  startingHealth: 3
+  movementController: {fileID: 1705636953}
+  playerInteraction: {fileID: 229956488}
 --- !u!1 &1826754092
 GameObject:
   m_ObjectHideFlags: 0

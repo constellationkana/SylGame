@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 
 /// <summary>
-/// Updates simple on-screen HUD text for collectible count and objective status.
+/// Updates simple on-screen HUD text for health, collectible count, and objective status.
 /// </summary>
 public class SimpleHUD : MonoBehaviour
 {
@@ -13,9 +13,11 @@ public class SimpleHUD : MonoBehaviour
     [Header("Scene References")]
     [SerializeField] private CollectibleManager collectibleManager;
     [SerializeField] private CollectibleObjective collectibleObjective;
+    [SerializeField] private PlayerHealth playerHealth;
 
     private bool isSubscribedToCollectibles;
     private bool isSubscribedToObjective;
+    private bool isSubscribedToHealth;
 
     private void OnEnable()
     {
@@ -43,6 +45,12 @@ public class SimpleHUD : MonoBehaviour
             collectibleObjective.ObjectiveProgressChanged -= HandleObjectiveProgressChanged;
             collectibleObjective.ObjectiveCompleted -= HandleObjectiveCompleted;
             isSubscribedToObjective = false;
+        }
+
+        if (playerHealth != null && isSubscribedToHealth)
+        {
+            playerHealth.HealthChanged -= HandleHealthChanged;
+            isSubscribedToHealth = false;
         }
     }
 
@@ -72,6 +80,11 @@ public class SimpleHUD : MonoBehaviour
             collectibleObjective = FindAnyObjectByType<CollectibleObjective>();
         }
 
+        if (playerHealth == null)
+        {
+            playerHealth = FindAnyObjectByType<PlayerHealth>();
+        }
+
         if (collectibleManager != null && !isSubscribedToCollectibles)
         {
             collectibleManager.CollectibleCollected += HandleCollectibleCollected;
@@ -91,6 +104,16 @@ public class SimpleHUD : MonoBehaviour
         else if (showWarnings && collectibleObjective == null)
         {
             Debug.LogWarning($"{nameof(SimpleHUD)} could not find a {nameof(CollectibleObjective)} in the scene.", this);
+        }
+
+        if (playerHealth != null && !isSubscribedToHealth)
+        {
+            playerHealth.HealthChanged += HandleHealthChanged;
+            isSubscribedToHealth = true;
+        }
+        else if (showWarnings && playerHealth == null)
+        {
+            Debug.LogWarning($"{nameof(SimpleHUD)} could not find a {nameof(PlayerHealth)} in the scene.", this);
         }
     }
 
@@ -143,6 +166,11 @@ public class SimpleHUD : MonoBehaviour
         RefreshObjective();
     }
 
+    private void HandleHealthChanged(int _)
+    {
+        RefreshObjective();
+    }
+
     private void UpdateCollectiblesText(int collectedCount)
     {
         if (collectiblesText == null)
@@ -162,16 +190,22 @@ public class SimpleHUD : MonoBehaviour
 
         if (isComplete)
         {
-            objectiveText.text = "Objective: Complete";
+            objectiveText.text = $"{GetHealthText()}\nObjective: Complete";
             return;
         }
 
         if (targetCount <= 0)
         {
-            objectiveText.text = "Objective: Not assigned";
+            objectiveText.text = $"{GetHealthText()}\nObjective: Not assigned";
             return;
         }
 
-        objectiveText.text = $"Objective: {currentProgress}/{targetCount}";
+        objectiveText.text = $"{GetHealthText()}\nObjective: {currentProgress}/{targetCount}";
+    }
+
+    private string GetHealthText()
+    {
+        int currentHealth = playerHealth != null ? playerHealth.CurrentHealth : 0;
+        return $"Health: {currentHealth}";
     }
 }
