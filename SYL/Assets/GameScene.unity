@@ -1783,6 +1783,8 @@ MonoBehaviour:
   movementSpeed: 2
   rotationSpeed: 8
   waypointReachDistance: 0.25
+  enemyDetection: {fileID: 987924274}
+  chaseSpeed: 5
 --- !u!114 &987924274
 MonoBehaviour:
   m_ObjectHideFlags: 0
