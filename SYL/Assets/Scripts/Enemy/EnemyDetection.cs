@@ -11,6 +11,16 @@ public class EnemyDetection : MonoBehaviour
 
     private bool playerDetected;
 
+    public bool PlayerDetected
+    {
+        get { return playerDetected; }
+    }
+
+    public Transform Player
+    {
+        get { return player; }
+    }
+
     private void Update()
     {
         if (player == null)

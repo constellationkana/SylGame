@@ -8,9 +8,42 @@ public class EnemyPatrol : MonoBehaviour
     [SerializeField] private float rotationSpeed = 8f;
     [SerializeField] private float waypointReachDistance = 0.25f;
 
+    [Header("Chase")]
+    [Tooltip("Existing EnemyDetection component used to know when the player is in range.")]
+    [SerializeField] private EnemyDetection enemyDetection;
+    [Tooltip("How fast the enemy moves while chasing the player.")]
+    [Min(0f)]
+    [SerializeField] private float chaseSpeed = 4f;
+
     private int currentWaypointIndex;
+    private bool isChasing;
+
+    private void Awake()
+    {
+        if (enemyDetection == null)
+        {
+            enemyDetection = GetComponent<EnemyDetection>();
+        }
+    }
 
     private void Update()
+    {
+        if (ShouldChasePlayer())
+        {
+            ChasePlayer();
+            return;
+        }
+
+        if (isChasing)
+        {
+            isChasing = false;
+            Debug.Log("Enemy leaving chase mode. Resuming patrol.", this);
+        }
+
+        Patrol();
+    }
+
+    private void Patrol()
     {
         Transform currentWaypoint = GetCurrentWaypoint();
 
@@ -35,6 +68,40 @@ public class EnemyPatrol : MonoBehaviour
             transform.position,
             targetPosition,
             movementSpeed * Time.deltaTime);
+
+        RotateToward(moveDirection);
+    }
+
+    private bool ShouldChasePlayer()
+    {
+        return enemyDetection != null
+            && enemyDetection.PlayerDetected
+            && enemyDetection.Player != null;
+    }
+
+    private void ChasePlayer()
+    {
+        if (!isChasing)
+        {
+            isChasing = true;
+            Debug.Log("Enemy entering chase mode.", this);
+        }
+
+        Vector3 targetPosition = enemyDetection.Player.position;
+        targetPosition.y = transform.position.y;
+
+        Vector3 directionToPlayer = targetPosition - transform.position;
+
+        if (directionToPlayer.sqrMagnitude <= 0.001f)
+        {
+            return;
+        }
+
+        Vector3 moveDirection = directionToPlayer.normalized;
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            targetPosition,
+            chaseSpeed * Time.deltaTime);
 
         RotateToward(moveDirection);
     }
@@ -85,5 +152,13 @@ public class EnemyPatrol : MonoBehaviour
             transform.rotation,
             targetRotation,
             rotationSpeed * Time.deltaTime);
+    }
+
+    private void OnValidate()
+    {
+        movementSpeed = Mathf.Max(0f, movementSpeed);
+        rotationSpeed = Mathf.Max(0f, rotationSpeed);
+        waypointReachDistance = Mathf.Max(0f, waypointReachDistance);
+        chaseSpeed = Mathf.Max(0f, chaseSpeed);
     }
 }
