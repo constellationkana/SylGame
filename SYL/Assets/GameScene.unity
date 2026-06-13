@@ -1810,9 +1810,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e84dd78cb3d4c8d9e4dbb70f5f87f31, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyContactDamage
   damageAmount: 1
+  damageInterval: 1
+  enemyDetection: {fileID: 987924274}
+  attackRange: 1.25
 --- !u!1 &1138216882
 GameObject:
   m_ObjectHideFlags: 0
@@ -2895,7 +2898,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c2d1e2d7f684f5b9c0f387ab1d4c2e0, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   startingHealth: 3
   movementController: {fileID: 1705636953}
