@@ -34,8 +34,6 @@ public class PlayerCameraController : MonoBehaviour
 
     private void Awake()
     {
-        ResolveReferences();
-
         yaw = transform.eulerAngles.y;
         pitch = NormalizePitch(transform.eulerAngles.x);
         isFirstPerson = startInFirstPerson;
@@ -92,19 +90,6 @@ public class PlayerCameraController : MonoBehaviour
             : focusPoint - (cameraRotation * Vector3.forward * followDistance);
 
         transform.SetPositionAndRotation(cameraPosition, cameraRotation);
-    }
-
-    private void ResolveReferences()
-    {
-        if (target == null && playerController != null)
-        {
-            target = playerController.transform;
-        }
-
-        if (playerInput == null && playerController != null)
-        {
-            playerInput = playerController.GetComponent<PlayerInput>();
-        }
     }
 
     private void ReadLookInput()

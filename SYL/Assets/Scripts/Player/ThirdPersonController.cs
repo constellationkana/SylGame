@@ -38,11 +38,6 @@ public class ThirdPersonController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
 
-        if (cameraTransform == null && Camera.main != null)
-        {
-            cameraTransform = Camera.main.transform;
-        }
-
         if (playerInput.actions == null)
         {
             Debug.LogError(
