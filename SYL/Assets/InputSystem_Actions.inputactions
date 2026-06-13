@@ -85,6 +85,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleCamera",
+                    "type": "Button",
+                    "id": "65db9de8-2289-4e75-9259-c86c32bb5fb3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -404,6 +413,17 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f26f806a-2606-48f7-95f7-93c7fdfffb6d",
+                    "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "ToggleCamera",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
