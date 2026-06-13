@@ -4,6 +4,8 @@ public class CollectibleManager : MonoBehaviour
 {
     public static CollectibleManager Instance { get; private set; }
 
+    public event System.Action<int> CollectibleCollected;
+
     public int CollectedCount { get; private set; }
 
     private void Awake()
@@ -30,5 +32,6 @@ public class CollectibleManager : MonoBehaviour
     {
         CollectedCount++;
         Debug.Log($"Collectibles collected: {CollectedCount}.", collectible);
+        CollectibleCollected?.Invoke(CollectedCount);
     }
 }
