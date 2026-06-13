@@ -8,6 +8,7 @@ public class PlayerCameraController : MonoBehaviour
     [SerializeField] private Transform target;
     [SerializeField] private ThirdPersonController playerController;
     [SerializeField] private PlayerInput playerInput;
+    [SerializeField] private Transform firstPersonVisibilityRoot;
 
     [Header("Input Actions")]
     [SerializeField] private string lookActionName = "Look";
@@ -16,7 +17,10 @@ public class PlayerCameraController : MonoBehaviour
     [Header("Camera Settings")]
     [SerializeField] private float mouseSensitivity = 1.5f;
     [SerializeField] private float followDistance = 5f;
-    [SerializeField] private float heightOffset = 1.6f;
+    [Tooltip("Camera height while the player is looking through the character's eyes.")]
+    [SerializeField] private float firstPersonHeight = 1.7f;
+    [Tooltip("Camera focus height while following the full character from behind.")]
+    [SerializeField] private float thirdPersonHeight = 1.7f;
     [SerializeField] private bool startInFirstPerson;
     [SerializeField] private bool lockCursorOnStart = true;
 
@@ -29,6 +33,7 @@ public class PlayerCameraController : MonoBehaviour
     private bool isFirstPerson;
     private float yaw;
     private float pitch = 15f;
+    private FirstPersonHiddenVisual[] firstPersonHiddenVisuals;
 
     public bool IsFirstPerson => isFirstPerson;
 
@@ -44,6 +49,7 @@ public class PlayerCameraController : MonoBehaviour
             toggleCameraAction = playerInput.actions.FindAction(toggleCameraActionName);
         }
 
+        CacheFirstPersonHiddenVisuals();
         ApplyPerspective();
     }
 
@@ -84,7 +90,8 @@ public class PlayerCameraController : MonoBehaviour
         }
 
         Quaternion cameraRotation = Quaternion.Euler(pitch, yaw, 0f);
-        Vector3 focusPoint = target.position + (Vector3.up * heightOffset);
+        // Each perspective gets its own height so future tuning does not affect both modes.
+        Vector3 focusPoint = target.position + (Vector3.up * GetCurrentCameraHeight());
         Vector3 cameraPosition = isFirstPerson
             ? focusPoint
             : focusPoint - (cameraRotation * Vector3.forward * followDistance);
@@ -137,11 +144,38 @@ public class PlayerCameraController : MonoBehaviour
 
     private void ApplyPerspective()
     {
+        CacheFirstPersonHiddenVisuals();
+
         if (playerController != null)
         {
             playerController.SetCameraTransform(transform);
             playerController.SetFirstPersonCameraActive(isFirstPerson);
         }
+
+        foreach (FirstPersonHiddenVisual hiddenVisual in firstPersonHiddenVisuals)
+        {
+            if (hiddenVisual != null)
+            {
+                hiddenVisual.SetHiddenForFirstPerson(isFirstPerson);
+            }
+        }
+    }
+
+    private void CacheFirstPersonHiddenVisuals()
+    {
+        Transform searchRoot = firstPersonVisibilityRoot != null ? firstPersonVisibilityRoot : target;
+        if (searchRoot == null)
+        {
+            firstPersonHiddenVisuals = new FirstPersonHiddenVisual[0];
+            return;
+        }
+
+        firstPersonHiddenVisuals = searchRoot.GetComponentsInChildren<FirstPersonHiddenVisual>(true);
+    }
+
+    private float GetCurrentCameraHeight()
+    {
+        return isFirstPerson ? firstPersonHeight : thirdPersonHeight;
     }
 
     private float NormalizePitch(float rawPitch)
