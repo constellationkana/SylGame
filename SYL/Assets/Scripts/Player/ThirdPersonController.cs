@@ -37,6 +37,7 @@ public class ThirdPersonController : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
+        ResolveCameraTransform();
 
         if (playerInput.actions == null)
         {
@@ -82,13 +83,15 @@ public class ThirdPersonController : MonoBehaviour
         }
 
         Vector2 moveInput = moveAction.ReadValue<Vector2>();
-        Vector3 moveDirection = GetCameraRelativeMoveDirection(moveInput);
 
         if (firstPersonCameraActive)
         {
             RotateWithCameraYaw();
         }
-        else
+
+        Vector3 moveDirection = GetCameraRelativeMoveDirection(moveInput);
+
+        if (!firstPersonCameraActive)
         {
             RotateTowardMovement(moveDirection);
         }
@@ -104,14 +107,11 @@ public class ThirdPersonController : MonoBehaviour
 
     private Vector3 GetCameraRelativeMoveDirection(Vector2 moveInput)
     {
-        Vector3 forward = transform.forward;
-        Vector3 right = transform.right;
+        ResolveCameraTransform();
 
-        if (cameraTransform != null)
-        {
-            forward = cameraTransform.forward;
-            right = cameraTransform.right;
-        }
+        Transform movementBasis = cameraTransform != null ? cameraTransform : transform;
+        Vector3 forward = movementBasis.forward;
+        Vector3 right = movementBasis.right;
 
         forward.y = 0f;
         right.y = 0f;
@@ -141,6 +141,8 @@ public class ThirdPersonController : MonoBehaviour
 
     private void RotateWithCameraYaw()
     {
+        ResolveCameraTransform();
+
         if (cameraTransform == null)
         {
             return;
@@ -171,5 +173,27 @@ public class ThirdPersonController : MonoBehaviour
     public void SetFirstPersonCameraActive(bool isActive)
     {
         firstPersonCameraActive = isActive;
+    }
+
+    public void SetCameraTransform(Transform newCameraTransform)
+    {
+        if (newCameraTransform != null)
+        {
+            cameraTransform = newCameraTransform;
+        }
+    }
+
+    private void ResolveCameraTransform()
+    {
+        if (cameraTransform != null)
+        {
+            return;
+        }
+
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null)
+        {
+            cameraTransform = mainCamera.transform;
+        }
     }
 }

@@ -139,6 +139,7 @@ public class PlayerCameraController : MonoBehaviour
     {
         if (playerController != null)
         {
+            playerController.SetCameraTransform(transform);
             playerController.SetFirstPersonCameraActive(isFirstPerson);
         }
     }
