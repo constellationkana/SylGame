@@ -7,6 +7,10 @@ public class CollectibleObjective : MonoBehaviour
     private CollectibleManager collectibleManager;
     private bool isComplete;
 
+    public event System.Action ObjectiveCompleted;
+
+    public bool IsComplete => isComplete;
+
     private void OnEnable()
     {
         TrySubscribeToCollectibleManager(false);
@@ -61,6 +65,7 @@ public class CollectibleObjective : MonoBehaviour
         {
             isComplete = true;
             Debug.Log("Objective Complete", this);
+            ObjectiveCompleted?.Invoke();
         }
     }
 }
