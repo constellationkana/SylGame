@@ -31,16 +31,12 @@ public class ThirdPersonController : MonoBehaviour
 
     private float verticalVelocity;
     private float currentRotationVelocity;
+    private bool firstPersonCameraActive;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
-
-        if (cameraTransform == null && Camera.main != null)
-        {
-            cameraTransform = Camera.main.transform;
-        }
 
         if (playerInput.actions == null)
         {
@@ -88,7 +84,15 @@ public class ThirdPersonController : MonoBehaviour
         Vector2 moveInput = moveAction.ReadValue<Vector2>();
         Vector3 moveDirection = GetCameraRelativeMoveDirection(moveInput);
 
-        RotateTowardMovement(moveDirection);
+        if (firstPersonCameraActive)
+        {
+            RotateWithCameraYaw();
+        }
+        else
+        {
+            RotateTowardMovement(moveDirection);
+        }
+
         ApplyJumpAndGravity();
 
         float speed = sprintAction.IsPressed() ? sprintSpeed : walkSpeed;
@@ -135,6 +139,16 @@ public class ThirdPersonController : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, smoothedAngle, 0f);
     }
 
+    private void RotateWithCameraYaw()
+    {
+        if (cameraTransform == null)
+        {
+            return;
+        }
+
+        transform.rotation = Quaternion.Euler(0f, cameraTransform.eulerAngles.y, 0f);
+    }
+
     private void ApplyJumpAndGravity()
     {
         bool isGrounded = characterController.isGrounded;
@@ -152,5 +166,10 @@ public class ThirdPersonController : MonoBehaviour
         {
             verticalVelocity += gravity * Time.deltaTime;
         }
+    }
+
+    public void SetFirstPersonCameraActive(bool isActive)
+    {
+        firstPersonCameraActive = isActive;
     }
 }
