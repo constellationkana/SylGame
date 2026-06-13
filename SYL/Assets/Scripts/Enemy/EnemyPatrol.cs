@@ -14,6 +14,9 @@ public class EnemyPatrol : MonoBehaviour
     [Tooltip("How fast the enemy moves while chasing the player.")]
     [Min(0f)]
     [SerializeField] private float chaseSpeed = 4f;
+    [Tooltip("How close the enemy gets before it stops chasing movement. Keep this at or below the attack range if the enemy should attack while stopped.")]
+    [Min(0f)]
+    [SerializeField] private float stoppingDistance = 1f;
 
     private int currentWaypointIndex;
     private bool isChasing;
@@ -98,9 +101,18 @@ public class EnemyPatrol : MonoBehaviour
         }
 
         Vector3 moveDirection = directionToPlayer.normalized;
+        float distanceToPlayer = directionToPlayer.magnitude;
+
+        if (distanceToPlayer <= stoppingDistance)
+        {
+            RotateToward(moveDirection);
+            return;
+        }
+
+        Vector3 stoppingPosition = targetPosition - (moveDirection * stoppingDistance);
         transform.position = Vector3.MoveTowards(
             transform.position,
-            targetPosition,
+            stoppingPosition,
             chaseSpeed * Time.deltaTime);
 
         RotateToward(moveDirection);
@@ -160,5 +172,6 @@ public class EnemyPatrol : MonoBehaviour
         rotationSpeed = Mathf.Max(0f, rotationSpeed);
         waypointReachDistance = Mathf.Max(0f, waypointReachDistance);
         chaseSpeed = Mathf.Max(0f, chaseSpeed);
+        stoppingDistance = Mathf.Max(0f, stoppingDistance);
     }
 }
