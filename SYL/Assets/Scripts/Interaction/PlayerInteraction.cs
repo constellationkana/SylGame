@@ -7,6 +7,7 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private float interactionRange = 3f;
     [SerializeField] private LayerMask interactionLayers = Physics.DefaultRaycastLayers;
+    [SerializeField] private Transform interactionOrigin;
 
     private void Awake()
     {
@@ -32,7 +33,10 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        Ray ray = new Ray(
+            interactionOrigin.position,
+            playerCamera.transform.forward
+        );
 
         if (!Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayers))
         {
