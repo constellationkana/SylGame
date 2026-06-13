@@ -1660,6 +1660,7 @@ GameObject:
   - component: {fileID: 987924270}
   - component: {fileID: 987924269}
   - component: {fileID: 987924273}
+  - component: {fileID: 987924274}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -1782,6 +1783,20 @@ MonoBehaviour:
   movementSpeed: 2
   rotationSpeed: 8
   waypointReachDistance: 0.25
+--- !u!114 &987924274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 987924268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f43b6e4bb2d4b23b347ac6dce903a5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDetection
+  player: {fileID: 1705636952}
+  detectionRadius: 3
 --- !u!1 &1138216882
 GameObject:
   m_ObjectHideFlags: 0
@@ -3338,3 +3353,4 @@ SceneRoots:
   - {fileID: 1577265649}
   - {fileID: 2004912781}
   - {fileID: 987924272}
+  - {fileID: 1536665225}
