@@ -96,11 +96,6 @@ public class PlayerCameraController : MonoBehaviour
 
     private void ResolveReferences()
     {
-        if (playerController == null)
-        {
-            playerController = FindFirstObjectByType<ThirdPersonController>();
-        }
-
         if (target == null && playerController != null)
         {
             target = playerController.transform;
