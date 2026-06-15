@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -51,6 +53,14 @@ public class PlayerHealth : MonoBehaviour
         HealthChanged?.Invoke(currentHealth);
     }
 
+    private void Update()
+    {
+        if (isDead && Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            RestartCurrentLevel();
+        }
+    }
+
     public void TakeDamage(int amount)
     {
         if (isDead)
@@ -72,6 +82,12 @@ public class PlayerHealth : MonoBehaviour
         {
             Die();
         }
+    }
+
+    private void RestartCurrentLevel()
+    {
+        Scene activeScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(activeScene.name);
     }
 
     private void Die()
