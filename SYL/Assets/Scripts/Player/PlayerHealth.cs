@@ -9,6 +9,7 @@ public class PlayerHealth : MonoBehaviour
     [Header("Disable On Death")]
     [SerializeField] private ThirdPersonController movementController;
     [SerializeField] private PlayerInteraction playerInteraction;
+    [SerializeField] private PlayerAttack playerAttack;
 
     private int currentHealth;
     private bool isDead;
@@ -37,6 +38,11 @@ public class PlayerHealth : MonoBehaviour
         if (playerInteraction == null)
         {
             playerInteraction = GetComponentInChildren<PlayerInteraction>();
+        }
+
+        if (playerAttack == null)
+        {
+            playerAttack = GetComponentInChildren<PlayerAttack>();
         }
     }
 
@@ -86,6 +92,11 @@ public class PlayerHealth : MonoBehaviour
         if (playerInteraction != null)
         {
             playerInteraction.enabled = false;
+        }
+
+        if (playerAttack != null)
+        {
+            playerAttack.enabled = false;
         }
     }
 
