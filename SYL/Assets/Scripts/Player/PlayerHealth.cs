@@ -75,7 +75,6 @@ public class PlayerHealth : MonoBehaviour
         }
 
         currentHealth = Mathf.Max(0, currentHealth - damageToApply);
-        Debug.Log($"Player health remaining: {currentHealth}", this);
         HealthChanged?.Invoke(currentHealth);
 
         if (currentHealth == 0)
@@ -98,7 +97,6 @@ public class PlayerHealth : MonoBehaviour
         }
 
         isDead = true;
-        Debug.Log("Game Over", this);
 
         if (movementController != null)
         {

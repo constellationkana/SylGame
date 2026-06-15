@@ -40,7 +40,6 @@ public class EnemyPatrol : MonoBehaviour
         if (isChasing)
         {
             isChasing = false;
-            Debug.Log("Enemy leaving chase mode. Resuming patrol.", this);
         }
 
         Patrol();
@@ -87,7 +86,6 @@ public class EnemyPatrol : MonoBehaviour
         if (!isChasing)
         {
             isChasing = true;
-            Debug.Log("Enemy entering chase mode.", this);
         }
 
         Vector3 targetPosition = enemyDetection.Player.position;

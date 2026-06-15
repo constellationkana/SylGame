@@ -87,7 +87,6 @@ public class CollectibleObjective : MonoBehaviour
     private void UpdateProgress(int collectedCount)
     {
         int displayedProgress = Mathf.Min(collectedCount, targetCollectibleCount);
-        Debug.Log($"Objective Progress: {displayedProgress}/{targetCollectibleCount}", this);
 
         if (currentProgress != displayedProgress)
         {
@@ -98,7 +97,6 @@ public class CollectibleObjective : MonoBehaviour
         if (!isComplete && collectedCount >= targetCollectibleCount)
         {
             isComplete = true;
-            Debug.Log("Objective Complete", this);
             ObjectiveCompleted?.Invoke();
         }
     }

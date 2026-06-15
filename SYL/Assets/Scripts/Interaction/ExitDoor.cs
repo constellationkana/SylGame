@@ -41,12 +41,10 @@ public class ExitDoor : MonoBehaviour, IInteractable
 
         if (!isUnlocked)
         {
-            Debug.Log("Door is locked.", this);
             return;
         }
 
         levelCompleted = true;
-        Debug.Log("Level Complete.", this);
 
         if (levelCompleteUI != null)
         {
@@ -67,6 +65,5 @@ public class ExitDoor : MonoBehaviour, IInteractable
         }
 
         isUnlocked = true;
-        Debug.Log("Exit door unlocked.", this);
     }
 }
