@@ -28,7 +28,6 @@ public class EnemyDetection : MonoBehaviour
             if (playerDetected)
             {
                 playerDetected = false;
-                Debug.Log("Player lost.", this);
             }
 
             return;
@@ -42,15 +41,6 @@ public class EnemyDetection : MonoBehaviour
         }
 
         playerDetected = playerIsInRange;
-
-        if (playerDetected)
-        {
-            Debug.Log("Player detected!", this);
-        }
-        else
-        {
-            Debug.Log("Player lost.", this);
-        }
     }
 
     private void OnValidate()

@@ -67,19 +67,16 @@ public class EnemyHealth : MonoBehaviour
     {
         if (isDead)
         {
-            Debug.Log($"{gameObject.name} is already dead and cannot take more damage.", this);
             return;
         }
 
         int damageToApply = Mathf.Max(0, damageAmount);
         if (damageToApply == 0)
         {
-            Debug.Log($"{gameObject.name} received no damage.", this);
             return;
         }
 
         currentHealth = Mathf.Max(0, currentHealth - damageToApply);
-        Debug.Log($"{gameObject.name} took {damageToApply} damage. Health: {currentHealth}/{startingHealth}", this);
 
         if (currentHealth == 0)
         {
@@ -98,7 +95,6 @@ public class EnemyHealth : MonoBehaviour
         }
 
         isDead = true;
-        Debug.Log($"{gameObject.name} died.", this);
 
         DisableEnemyBehaviors();
         DisableEnemyColliders();

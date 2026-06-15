@@ -49,7 +49,6 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        Debug.Log($"Interacted with {hit.collider.gameObject.name}.", hit.collider);
         interactable.Interact();
     }
 

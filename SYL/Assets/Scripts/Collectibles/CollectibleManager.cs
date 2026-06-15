@@ -31,7 +31,6 @@ public class CollectibleManager : MonoBehaviour
     public void RegisterCollection(Collectible collectible)
     {
         CollectedCount++;
-        Debug.Log($"Collectibles collected: {CollectedCount}.", collectible);
         CollectibleCollected?.Invoke(CollectedCount);
     }
 }

@@ -38,8 +38,6 @@ public class Collectible : MonoBehaviour
     {
         isCollected = true;
 
-        Debug.Log($"Collected {gameObject.name}.", this);
-
         if (CollectibleManager.Instance != null)
         {
             CollectibleManager.Instance.RegisterCollection(this);

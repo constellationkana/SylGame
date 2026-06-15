@@ -38,7 +38,7 @@ public class PlayerAttack : MonoBehaviour
 
         if (playerCamera == null)
         {
-            Debug.Log($"{nameof(PlayerAttack)} could not attack because no player camera was found.", this);
+            Debug.LogWarning($"{nameof(PlayerAttack)} could not attack because no player camera was found.", this);
             return;
         }
 
@@ -46,18 +46,15 @@ public class PlayerAttack : MonoBehaviour
 
         if (!Physics.SphereCast(ray, attackRadius, out RaycastHit hit, attackRange, attackLayers))
         {
-            Debug.Log("Player attack missed.", this);
             return;
         }
 
         EnemyHealth enemyHealth = hit.collider.GetComponentInParent<EnemyHealth>();
         if (enemyHealth == null)
         {
-            Debug.Log($"Player attack hit {hit.collider.gameObject.name}, but it is not an enemy.", hit.collider);
             return;
         }
 
-        Debug.Log($"Player attacked {enemyHealth.gameObject.name} for {attackDamage} damage.", enemyHealth);
         enemyHealth.TakeDamage(attackDamage);
     }
 
