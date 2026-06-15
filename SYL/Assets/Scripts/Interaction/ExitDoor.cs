@@ -4,8 +4,10 @@ using UnityEngine;
 public class ExitDoor : MonoBehaviour, IInteractable
 {
     [SerializeField] private CollectibleObjective objective;
+    [SerializeField] private LevelCompleteUI levelCompleteUI;
 
     private bool isUnlocked;
+    private bool levelCompleted;
 
     private void OnEnable()
     {
@@ -32,13 +34,24 @@ public class ExitDoor : MonoBehaviour, IInteractable
 
     public void Interact()
     {
+        if (levelCompleted)
+        {
+            return;
+        }
+
         if (!isUnlocked)
         {
             Debug.Log("Door is locked.", this);
             return;
         }
 
+        levelCompleted = true;
         Debug.Log("Level Complete.", this);
+
+        if (levelCompleteUI != null)
+        {
+            levelCompleteUI.ShowLevelComplete();
+        }
     }
 
     private void HandleObjectiveCompleted()
