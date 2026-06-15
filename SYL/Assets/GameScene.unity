@@ -2726,6 +2726,7 @@ GameObject:
   - component: {fileID: 1705636954}
   - component: {fileID: 1705636953}
   - component: {fileID: 1705636956}
+  - component: {fileID: 1705636957}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -2920,9 +2921,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c2d1e2d7f684f5b9c0f387ab1d4c2e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  startingHealth: 3
+  startingHealth: 10
   movementController: {fileID: 1705636953}
   playerInteraction: {fileID: 229956488}
+  playerAttack: {fileID: 1705636957}
+--- !u!114 &1705636957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1705636948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f99809cdea6b44cf96ac9a6621621065, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
+  playerCamera: {fileID: 330585545}
+  interactionOrigin: {fileID: 229956487}
+  attackLayers:
+    serializedVersion: 2
+    m_Bits: 51
+  attackRange: 2
+  attackDamage: 1
 --- !u!1 &1826754092
 GameObject:
   m_ObjectHideFlags: 0
@@ -3384,7 +3405,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 1, z: 3}
+  m_LocalScale: {x: 5, y: 1, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
