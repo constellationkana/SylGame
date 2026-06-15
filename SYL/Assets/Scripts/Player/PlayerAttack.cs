@@ -10,6 +10,8 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private LayerMask attackLayers = Physics.DefaultRaycastLayers;
     [Min(0f)]
     [SerializeField] private float attackRange = 2f;
+    [Min(0f)]
+    [SerializeField] private float attackRadius = 0.35f;
     [Min(1)]
     [SerializeField] private int attackDamage = 1;
 
@@ -42,7 +44,7 @@ public class PlayerAttack : MonoBehaviour
 
         Ray ray = new Ray(GetAttackOriginPosition(), GetAttackDirection());
 
-        if (!Physics.Raycast(ray, out RaycastHit hit, attackRange, attackLayers))
+        if (!Physics.SphereCast(ray, attackRadius, out RaycastHit hit, attackRange, attackLayers))
         {
             Debug.Log("Player attack missed.", this);
             return;
@@ -112,6 +114,7 @@ public class PlayerAttack : MonoBehaviour
     private void OnValidate()
     {
         attackRange = Mathf.Max(0f, attackRange);
+        attackRadius = Mathf.Max(0f, attackRadius);
         attackDamage = Mathf.Max(1, attackDamage);
     }
 }
