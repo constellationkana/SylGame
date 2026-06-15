@@ -5,6 +5,7 @@ public class PlayerAttack : MonoBehaviour
 {
     [Header("Attack")]
     [SerializeField] private Camera playerCamera = null;
+    [SerializeField] private PlayerCameraController playerCameraController = null;
     [SerializeField] private Transform interactionOrigin = null;
     [SerializeField] private LayerMask attackLayers = Physics.DefaultRaycastLayers;
     [Min(0f)]
@@ -15,6 +16,7 @@ public class PlayerAttack : MonoBehaviour
     private void Awake()
     {
         ResolvePlayerCamera();
+        ResolvePlayerCameraController();
     }
 
     private void Update()
@@ -30,6 +32,7 @@ public class PlayerAttack : MonoBehaviour
     private void Attack()
     {
         ResolvePlayerCamera();
+        ResolvePlayerCameraController();
 
         if (playerCamera == null)
         {
@@ -37,7 +40,7 @@ public class PlayerAttack : MonoBehaviour
             return;
         }
 
-        Ray ray = new Ray(GetAttackOriginPosition(), playerCamera.transform.forward);
+        Ray ray = new Ray(GetAttackOriginPosition(), GetAttackDirection());
 
         if (!Physics.Raycast(ray, out RaycastHit hit, attackRange, attackLayers))
         {
@@ -71,6 +74,16 @@ public class PlayerAttack : MonoBehaviour
         return transform.position;
     }
 
+    private Vector3 GetAttackDirection()
+    {
+        if (playerCameraController != null && playerCameraController.IsFirstPerson)
+        {
+            return playerCamera.transform.forward;
+        }
+
+        return transform.forward;
+    }
+
     private void ResolvePlayerCamera()
     {
         if (playerCamera != null)
@@ -84,6 +97,16 @@ public class PlayerAttack : MonoBehaviour
         {
             playerCamera = Camera.main;
         }
+    }
+
+    private void ResolvePlayerCameraController()
+    {
+        if (playerCameraController != null || playerCamera == null)
+        {
+            return;
+        }
+
+        playerCameraController = playerCamera.GetComponent<PlayerCameraController>();
     }
 
     private void OnValidate()
