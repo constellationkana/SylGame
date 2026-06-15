@@ -4,8 +4,9 @@ using UnityEngine.UI;
 public class PlayerDamageFeedback : MonoBehaviour
 {
     [Header("Scene References")]
-    [SerializeField] private PlayerHealth playerHealth;
-    [SerializeField] private Image damageOverlay;
+    [SerializeField] private PlayerHealth playerHealth = null;
+    [SerializeField] private Image damageOverlay = null;
+    [SerializeField] private PlayerCameraController playerCameraController = null;
 
     [Header("Flash Settings")]
     [Range(0f, 1f)]
@@ -14,6 +15,12 @@ public class PlayerDamageFeedback : MonoBehaviour
     [SerializeField] private float holdDuration = 0.05f;
     [Min(0.01f)]
     [SerializeField] private float fadeDuration = 0.25f;
+
+    [Header("Camera Shake")]
+    [Min(0f)]
+    [SerializeField] private float shakeDuration = 0.15f;
+    [Min(0f)]
+    [SerializeField] private float shakeMagnitude = 0.08f;
 
     private Color overlayColor = Color.red;
     private float holdTimer;
@@ -31,6 +38,11 @@ public class PlayerDamageFeedback : MonoBehaviour
             playerHealth = FindAnyObjectByType<PlayerHealth>();
         }
 
+        if (playerCameraController == null)
+        {
+            playerCameraController = FindAnyObjectByType<PlayerCameraController>();
+        }
+
         if (damageOverlay != null)
         {
             overlayColor = damageOverlay.color;
@@ -45,6 +57,11 @@ public class PlayerDamageFeedback : MonoBehaviour
         if (playerHealth == null)
         {
             playerHealth = FindAnyObjectByType<PlayerHealth>();
+        }
+
+        if (playerCameraController == null)
+        {
+            playerCameraController = FindAnyObjectByType<PlayerCameraController>();
         }
 
         if (playerHealth != null)
@@ -84,6 +101,11 @@ public class PlayerDamageFeedback : MonoBehaviour
         holdTimer = holdDuration;
         fadeTimer = 0f;
         SetOverlayAlpha(flashAlpha);
+
+        if (playerCameraController != null)
+        {
+            playerCameraController.Shake(shakeDuration, shakeMagnitude);
+        }
     }
 
     private void SetOverlayAlpha(float alpha)
@@ -102,5 +124,7 @@ public class PlayerDamageFeedback : MonoBehaviour
         flashAlpha = Mathf.Clamp01(flashAlpha);
         holdDuration = Mathf.Max(0f, holdDuration);
         fadeDuration = Mathf.Max(0.01f, fadeDuration);
+        shakeDuration = Mathf.Max(0f, shakeDuration);
+        shakeMagnitude = Mathf.Max(0f, shakeMagnitude);
     }
 }
