@@ -17,6 +17,7 @@ public class PlayerHealth : MonoBehaviour
     private bool isDead;
 
     public event System.Action<int> HealthChanged;
+    public event System.Action<int> DamageTaken;
 
     public int CurrentHealth
     {
@@ -75,6 +76,7 @@ public class PlayerHealth : MonoBehaviour
         }
 
         currentHealth = Mathf.Max(0, currentHealth - damageToApply);
+        DamageTaken?.Invoke(damageToApply);
         HealthChanged?.Invoke(currentHealth);
 
         if (currentHealth == 0)

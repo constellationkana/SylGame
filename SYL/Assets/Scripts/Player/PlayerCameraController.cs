@@ -33,6 +33,9 @@ public class PlayerCameraController : MonoBehaviour
     private bool isFirstPerson;
     private float yaw;
     private float pitch = 15f;
+    private float shakeTimer;
+    private float shakeDuration;
+    private float shakeMagnitude;
     private FirstPersonHiddenVisual[] firstPersonHiddenVisuals;
 
     public bool IsFirstPerson => isFirstPerson;
@@ -96,7 +99,15 @@ public class PlayerCameraController : MonoBehaviour
             ? focusPoint
             : focusPoint - (cameraRotation * Vector3.forward * followDistance);
 
+        cameraPosition += GetShakeOffset(cameraRotation);
         transform.SetPositionAndRotation(cameraPosition, cameraRotation);
+    }
+
+    public void Shake(float duration, float magnitude)
+    {
+        shakeDuration = Mathf.Max(0f, duration);
+        shakeTimer = shakeDuration;
+        shakeMagnitude = Mathf.Max(0f, magnitude);
     }
 
     private void ReadLookInput()
@@ -176,6 +187,26 @@ public class PlayerCameraController : MonoBehaviour
     private float GetCurrentCameraHeight()
     {
         return isFirstPerson ? firstPersonHeight : thirdPersonHeight;
+    }
+
+    private Vector3 GetShakeOffset(Quaternion cameraRotation)
+    {
+        if (shakeTimer <= 0f || shakeMagnitude <= 0f)
+        {
+            return Vector3.zero;
+        }
+
+        shakeTimer = Mathf.Max(0f, shakeTimer - Time.deltaTime);
+
+        if (shakeTimer <= 0f)
+        {
+            return Vector3.zero;
+        }
+
+        float shakeStrength = shakeMagnitude * (shakeTimer / shakeDuration);
+        Vector2 randomOffset = Random.insideUnitCircle * shakeStrength;
+
+        return cameraRotation * new Vector3(randomOffset.x, randomOffset.y, 0f);
     }
 
     private float NormalizePitch(float rawPitch)
