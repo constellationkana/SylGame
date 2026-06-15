@@ -1662,6 +1662,7 @@ GameObject:
   - component: {fileID: 987924273}
   - component: {fileID: 987924274}
   - component: {fileID: 987924275}
+  - component: {fileID: 987924276}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -1817,6 +1818,22 @@ MonoBehaviour:
   damageInterval: 1
   enemyDetection: {fileID: 987924274}
   attackRange: 1.25
+--- !u!114 &987924276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 987924268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0d74eb7fa744496a7e2d5ea07318d6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  startingHealth: 3
+  enemyDetection: {fileID: 987924274}
+  enemyPatrol: {fileID: 987924273}
+  enemyContactDamage: {fileID: 987924275}
 --- !u!1 &1138216882
 GameObject:
   m_ObjectHideFlags: 0
