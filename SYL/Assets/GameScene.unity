@@ -1269,7 +1269,8 @@ MonoBehaviour:
   objective: {fileID: 278886788}
   levelCompleteUI: {fileID: 1577265650}
   audioSource: {fileID: 157707220}
-  unlockClip: {fileID: 8300000, guid: dde06a65300a73f4faed2053a6a64eb7, type: 3}
+  unlockClip: {fileID: 8300000, guid: 8fb44d9d09f7b4f4383b26b7dffad7e2, type: 3}
+  levelCompleteClip: {fileID: 8300000, guid: dde06a65300a73f4faed2053a6a64eb7, type: 3}
 --- !u!65 &492356789
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2285,8 +2286,6 @@ MonoBehaviour:
   levelCompletePanel: {fileID: 2143000010}
   levelCompleteText: {fileID: 2143000017}
   levelCompleteMessage: Level Complete
-  audioSource: {fileID: 157707220}
-  levelCompleteClip: {fileID: 8300000, guid: dde06a65300a73f4faed2053a6a64eb7, type: 3}
   gameplayBehavioursToDisable:
   - {fileID: 1705636953}
   - {fileID: 229956488}

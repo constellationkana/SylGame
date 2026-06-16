@@ -9,6 +9,7 @@ public class ExitDoor : MonoBehaviour, IInteractable
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip unlockClip;
+    [SerializeField] private AudioClip levelCompleteClip;
 
     private bool isUnlocked;
     private bool levelCompleted;
@@ -65,6 +66,7 @@ public class ExitDoor : MonoBehaviour, IInteractable
         }
 
         levelCompleted = true;
+        PlaySound(levelCompleteClip);
 
         if (levelCompleteUI != null)
         {
