@@ -15,6 +15,11 @@ public class EnemyHealth : MonoBehaviour
     [Tooltip("Stops this enemy from damaging the player when it dies.")]
     [SerializeField] private EnemyContactDamage enemyContactDamage;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip hitClip;
+    [SerializeField] private AudioClip deathClip;
+
     [Header("Damage Feedback")]
     [Tooltip("Color shown briefly when this enemy takes damage.")]
     [SerializeField] private Color damageFlashColor = Color.red;
@@ -84,6 +89,7 @@ public class EnemyHealth : MonoBehaviour
             return;
         }
 
+        PlaySound(hitClip);
         ShowDamageFeedback();
     }
 
@@ -96,6 +102,7 @@ public class EnemyHealth : MonoBehaviour
 
         isDead = true;
 
+        PlaySound(deathClip);
         DisableEnemyBehaviors();
         DisableEnemyColliders();
         ShowDeathFeedback();
@@ -258,6 +265,11 @@ public class EnemyHealth : MonoBehaviour
             enemyContactDamage = GetComponent<EnemyContactDamage>();
         }
 
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+
         if (enemyRenderers == null || enemyRenderers.Length == 0)
         {
             enemyRenderers = GetComponentsInChildren<Renderer>();
@@ -267,6 +279,16 @@ public class EnemyHealth : MonoBehaviour
         {
             enemyColliders = GetComponentsInChildren<Collider>();
         }
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource == null || clip == null)
+        {
+            return;
+        }
+
+        audioSource.PlayOneShot(clip);
     }
 
     private void OnValidate()

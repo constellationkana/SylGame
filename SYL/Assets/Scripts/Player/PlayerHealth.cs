@@ -13,6 +13,11 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private PlayerInteraction playerInteraction;
     [SerializeField] private PlayerAttack playerAttack;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip damageClip;
+    [SerializeField] private AudioClip gameOverClip;
+
     private int currentHealth;
     private bool isDead;
 
@@ -47,6 +52,19 @@ public class PlayerHealth : MonoBehaviour
         {
             playerAttack = GetComponentInChildren<PlayerAttack>();
         }
+
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+    }
+
+    private void Reset()
+    {
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
     }
 
     private void Start()
@@ -76,6 +94,7 @@ public class PlayerHealth : MonoBehaviour
         }
 
         currentHealth = Mathf.Max(0, currentHealth - damageToApply);
+        PlaySound(damageClip);
         DamageTaken?.Invoke(damageToApply);
         HealthChanged?.Invoke(currentHealth);
 
@@ -99,6 +118,7 @@ public class PlayerHealth : MonoBehaviour
         }
 
         isDead = true;
+        PlaySound(gameOverClip);
 
         if (movementController != null)
         {
@@ -114,6 +134,16 @@ public class PlayerHealth : MonoBehaviour
         {
             playerAttack.enabled = false;
         }
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource == null || clip == null)
+        {
+            return;
+        }
+
+        audioSource.PlayOneShot(clip);
     }
 
     private void OnValidate()

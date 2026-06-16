@@ -4,6 +4,10 @@ public class CollectibleManager : MonoBehaviour
 {
     public static CollectibleManager Instance { get; private set; }
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip pickupClip;
+
     public event System.Action<int> CollectibleCollected;
 
     public int CollectedCount { get; private set; }
@@ -18,6 +22,19 @@ public class CollectibleManager : MonoBehaviour
         }
 
         Instance = this;
+
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+    }
+
+    private void Reset()
+    {
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
     }
 
     private void OnDestroy()
@@ -31,6 +48,17 @@ public class CollectibleManager : MonoBehaviour
     public void RegisterCollection(Collectible collectible)
     {
         CollectedCount++;
+        PlaySound(pickupClip);
         CollectibleCollected?.Invoke(CollectedCount);
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource == null || clip == null)
+        {
+            return;
+        }
+
+        audioSource.PlayOneShot(clip);
     }
 }
