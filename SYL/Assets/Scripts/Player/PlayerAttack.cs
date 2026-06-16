@@ -15,10 +15,20 @@ public class PlayerAttack : MonoBehaviour
     [Min(1)]
     [SerializeField] private int attackDamage = 1;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip attackClip;
+
     private void Awake()
     {
+        ResolveAudioSource();
         ResolvePlayerCamera();
         ResolvePlayerCameraController();
+    }
+
+    private void Reset()
+    {
+        ResolveAudioSource();
     }
 
     private void Update()
@@ -41,6 +51,8 @@ public class PlayerAttack : MonoBehaviour
             Debug.LogWarning($"{nameof(PlayerAttack)} could not attack because no player camera was found.", this);
             return;
         }
+
+        PlaySound(attackClip);
 
         Ray ray = new Ray(GetAttackOriginPosition(), GetAttackDirection());
 
@@ -106,6 +118,24 @@ public class PlayerAttack : MonoBehaviour
         }
 
         playerCameraController = playerCamera.GetComponent<PlayerCameraController>();
+    }
+
+    private void ResolveAudioSource()
+    {
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource == null || clip == null)
+        {
+            return;
+        }
+
+        audioSource.PlayOneShot(clip);
     }
 
     private void OnValidate()

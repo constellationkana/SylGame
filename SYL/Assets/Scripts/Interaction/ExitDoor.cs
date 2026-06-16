@@ -6,8 +6,28 @@ public class ExitDoor : MonoBehaviour, IInteractable
     [SerializeField] private CollectibleObjective objective;
     [SerializeField] private LevelCompleteUI levelCompleteUI;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip unlockClip;
+
     private bool isUnlocked;
     private bool levelCompleted;
+
+    private void Awake()
+    {
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+    }
+
+    private void Reset()
+    {
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+    }
 
     private void OnEnable()
     {
@@ -65,5 +85,16 @@ public class ExitDoor : MonoBehaviour, IInteractable
         }
 
         isUnlocked = true;
+        PlaySound(unlockClip);
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource == null || clip == null)
+        {
+            return;
+        }
+
+        audioSource.PlayOneShot(clip);
     }
 }
