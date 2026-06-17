@@ -76,6 +76,11 @@ public class PlayerCameraController : MonoBehaviour
 
     private void Update()
     {
+        if (GameStateManager.Instance.IsPaused)
+        {
+            return;
+        }
+
         ReadLookInput();
 
         if (WasTogglePressed())

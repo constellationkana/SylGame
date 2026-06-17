@@ -30,6 +30,16 @@ public class GameStateManager : MonoBehaviour
         get { return currentState; }
     }
 
+    public bool IsPlaying
+    {
+        get { return currentState == GameState.Playing; }
+    }
+
+    public bool IsPaused
+    {
+        get { return currentState == GameState.Paused; }
+    }
+
     private void Awake()
     {
         if (instance != null && instance != this)

@@ -33,6 +33,11 @@ public class PlayerAttack : MonoBehaviour
 
     private void Update()
     {
+        if (GameStateManager.Instance.IsPaused)
+        {
+            return;
+        }
+
         if (Mouse.current == null || !Mouse.current.leftButton.wasPressedThisFrame)
         {
             return;

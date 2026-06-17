@@ -31,6 +31,11 @@ public class EnemyContactDamage : MonoBehaviour
 
     private void Update()
     {
+        if (GameStateManager.Instance.IsPaused)
+        {
+            return;
+        }
+
         Transform playerTransform = GetPlayerTransform();
         PlayerHealth playerHealth = GetPlayerHealth(playerTransform);
 
