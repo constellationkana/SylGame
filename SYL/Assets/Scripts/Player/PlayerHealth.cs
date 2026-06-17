@@ -118,6 +118,7 @@ public class PlayerHealth : MonoBehaviour
         }
 
         isDead = true;
+        GameStateManager.Instance.SetState(GameState.GameOver);
         PlaySound(gameOverClip);
 
         if (movementController != null)
