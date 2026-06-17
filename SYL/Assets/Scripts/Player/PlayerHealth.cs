@@ -74,6 +74,11 @@ public class PlayerHealth : MonoBehaviour
 
     private void Update()
     {
+        if (GameStateManager.Instance.IsPaused)
+        {
+            return;
+        }
+
         if (isDead && Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
         {
             RestartCurrentLevel();

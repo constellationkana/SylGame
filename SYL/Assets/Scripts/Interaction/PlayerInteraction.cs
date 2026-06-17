@@ -16,6 +16,11 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
+        if (GameStateManager.Instance.IsPaused)
+        {
+            return;
+        }
+
         if (Keyboard.current == null || !Keyboard.current.eKey.wasPressedThisFrame)
         {
             return;

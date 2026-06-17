@@ -77,6 +77,11 @@ public class ThirdPersonController : MonoBehaviour
 
     private void Update()
     {
+        if (GameStateManager.Instance.IsPaused)
+        {
+            return;
+        }
+
         if (moveAction == null || sprintAction == null || jumpAction == null)
         {
             return;
