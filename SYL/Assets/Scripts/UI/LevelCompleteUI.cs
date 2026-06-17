@@ -34,6 +34,7 @@ public class LevelCompleteUI : MonoBehaviour
         }
 
         isLevelComplete = true;
+        GameStateManager.Instance.SetState(GameState.LevelComplete);
 
         if (levelCompleteText != null)
         {
