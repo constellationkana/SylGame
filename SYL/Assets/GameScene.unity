@@ -2116,7 +2116,7 @@ GameObject:
   - component: {fileID: 2144000013}
   - component: {fileID: 2144000014}
   - component: {fileID: 2144000015}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SouthBoundaryWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2228,7 +2228,7 @@ GameObject:
   - component: {fileID: 2144000023}
   - component: {fileID: 2144000024}
   - component: {fileID: 2144000025}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: NorthBoundaryWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2340,7 +2340,7 @@ GameObject:
   - component: {fileID: 2144000033}
   - component: {fileID: 2144000034}
   - component: {fileID: 2144000035}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: WestBoundaryWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2452,7 +2452,7 @@ GameObject:
   - component: {fileID: 2144000043}
   - component: {fileID: 2144000044}
   - component: {fileID: 2144000045}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: EastBoundaryWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2564,7 +2564,7 @@ GameObject:
   - component: {fileID: 2144000053}
   - component: {fileID: 2144000054}
   - component: {fileID: 2144000055}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LeftStartDividerWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2676,7 +2676,7 @@ GameObject:
   - component: {fileID: 2144000063}
   - component: {fileID: 2144000064}
   - component: {fileID: 2144000065}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RightStartDividerWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2788,7 +2788,7 @@ GameObject:
   - component: {fileID: 2144000073}
   - component: {fileID: 2144000074}
   - component: {fileID: 2144000075}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LeftEnemyLaneWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2900,7 +2900,7 @@ GameObject:
   - component: {fileID: 2144000083}
   - component: {fileID: 2144000084}
   - component: {fileID: 2144000085}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RightEnemyLaneWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

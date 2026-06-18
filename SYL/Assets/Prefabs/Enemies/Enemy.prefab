@@ -156,6 +156,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDetection
   player: {fileID: 0}
   detectionRadius: 4.5
+  visionOrigin: {fileID: 0}
+  visionBlockingLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  showVisionDebug: 0
 --- !u!114 &81457034229860832
 MonoBehaviour:
   m_ObjectHideFlags: 0
