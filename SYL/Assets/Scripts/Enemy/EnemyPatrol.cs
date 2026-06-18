@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.AI;
 
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(NavMeshAgent))]
 public class EnemyPatrol : MonoBehaviour
 {
     [Header("Patrol")]
@@ -21,16 +22,23 @@ public class EnemyPatrol : MonoBehaviour
 
     private int currentWaypointIndex;
     private bool isChasing;
-    private CharacterController characterController;
+    private NavMeshAgent navMeshAgent;
 
     private void Awake()
     {
-        characterController = GetComponent<CharacterController>();
+        navMeshAgent = GetComponent<NavMeshAgent>();
 
         if (enemyDetection == null)
         {
             enemyDetection = GetComponent<EnemyDetection>();
         }
+
+        ConfigureAgentDefaults();
+    }
+
+    private void OnDisable()
+    {
+        StopNavigation();
     }
 
     private void Update()
@@ -55,24 +63,25 @@ public class EnemyPatrol : MonoBehaviour
 
         if (currentWaypoint == null)
         {
+            StopNavigation();
             return;
         }
 
-        Vector3 targetPosition = currentWaypoint.position;
-        targetPosition.y = transform.position.y;
-
-        Vector3 directionToWaypoint = targetPosition - transform.position;
-
-        if (directionToWaypoint.magnitude <= waypointReachDistance)
+        if (HasReachedDestination(currentWaypoint))
         {
             AdvanceToNextWaypoint();
             return;
         }
 
-        Vector3 moveDirection = directionToWaypoint.normalized;
-        MoveToward(targetPosition, movementSpeed);
+        if (!CanUseAgent())
+        {
+            return;
+        }
 
-        RotateToward(moveDirection);
+        navMeshAgent.speed = movementSpeed;
+        navMeshAgent.stoppingDistance = 0f;
+        SetDestination(currentWaypoint.position);
+        RotateTowardAgentMovement();
     }
 
     private bool ShouldChasePlayer()
@@ -89,10 +98,8 @@ public class EnemyPatrol : MonoBehaviour
             isChasing = true;
         }
 
-        Vector3 targetPosition = enemyDetection.Player.position;
-        targetPosition.y = transform.position.y;
-
-        Vector3 directionToPlayer = targetPosition - transform.position;
+        Vector3 directionToPlayer = enemyDetection.Player.position - transform.position;
+        directionToPlayer.y = 0f;
 
         if (directionToPlayer.sqrMagnitude <= 0.001f)
         {
@@ -104,42 +111,94 @@ public class EnemyPatrol : MonoBehaviour
 
         if (distanceToPlayer <= stoppingDistance)
         {
+            StopNavigation();
             RotateToward(moveDirection);
             return;
         }
 
-        Vector3 stoppingPosition = targetPosition - (moveDirection * stoppingDistance);
-        MoveToward(stoppingPosition, chaseSpeed);
+        if (!CanUseAgent())
+        {
+            return;
+        }
 
-        RotateToward(moveDirection);
+        navMeshAgent.speed = chaseSpeed;
+        navMeshAgent.stoppingDistance = stoppingDistance;
+        SetDestination(enemyDetection.Player.position);
+        RotateTowardAgentMovement();
     }
 
     private void StopChasingAndResumePatrol()
     {
         isChasing = false;
         SetClosestWaypointAsCurrent();
+        StopNavigation();
     }
 
-    private void MoveToward(Vector3 targetPosition, float speed)
+    private void ConfigureAgentDefaults()
     {
-        Vector3 nextPosition = Vector3.MoveTowards(
-            transform.position,
-            targetPosition,
-            speed * Time.deltaTime);
-
-        Vector3 movement = nextPosition - transform.position;
-
-        if (movement.sqrMagnitude <= 0.000001f)
+        if (navMeshAgent == null)
         {
             return;
         }
 
-        if (characterController == null || !characterController.enabled)
+        navMeshAgent.updateRotation = false;
+        navMeshAgent.autoBraking = true;
+        navMeshAgent.speed = movementSpeed;
+        navMeshAgent.stoppingDistance = 0f;
+    }
+
+    private bool CanUseAgent()
+    {
+        return navMeshAgent != null
+            && navMeshAgent.enabled
+            && navMeshAgent.isOnNavMesh;
+    }
+
+    private void SetDestination(Vector3 destination)
+    {
+        if (!CanUseAgent())
         {
             return;
         }
 
-        characterController.Move(movement);
+        navMeshAgent.isStopped = false;
+        navMeshAgent.SetDestination(destination);
+    }
+
+    private bool HasReachedDestination(Transform currentWaypoint)
+    {
+        if (currentWaypoint == null)
+        {
+            return false;
+        }
+
+        Vector3 waypointPosition = currentWaypoint.position;
+        waypointPosition.y = transform.position.y;
+
+        return Vector3.Distance(transform.position, waypointPosition) <= waypointReachDistance;
+    }
+
+    private void StopNavigation()
+    {
+        if (!CanUseAgent())
+        {
+            return;
+        }
+
+        navMeshAgent.isStopped = true;
+        navMeshAgent.ResetPath();
+    }
+
+    private void RotateTowardAgentMovement()
+    {
+        if (navMeshAgent == null)
+        {
+            return;
+        }
+
+        Vector3 moveDirection = navMeshAgent.desiredVelocity;
+        moveDirection.y = 0f;
+        RotateToward(moveDirection);
     }
 
     private void SetClosestWaypointAsCurrent()
