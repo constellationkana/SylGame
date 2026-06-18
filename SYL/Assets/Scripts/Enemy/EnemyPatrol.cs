@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class EnemyPatrol : MonoBehaviour
 {
     [Header("Patrol")]
@@ -20,9 +21,12 @@ public class EnemyPatrol : MonoBehaviour
 
     private int currentWaypointIndex;
     private bool isChasing;
+    private CharacterController characterController;
 
     private void Awake()
     {
+        characterController = GetComponent<CharacterController>();
+
         if (enemyDetection == null)
         {
             enemyDetection = GetComponent<EnemyDetection>();
@@ -66,10 +70,7 @@ public class EnemyPatrol : MonoBehaviour
         }
 
         Vector3 moveDirection = directionToWaypoint.normalized;
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            targetPosition,
-            movementSpeed * Time.deltaTime);
+        MoveToward(targetPosition, movementSpeed);
 
         RotateToward(moveDirection);
     }
@@ -108,12 +109,31 @@ public class EnemyPatrol : MonoBehaviour
         }
 
         Vector3 stoppingPosition = targetPosition - (moveDirection * stoppingDistance);
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            stoppingPosition,
-            chaseSpeed * Time.deltaTime);
+        MoveToward(stoppingPosition, chaseSpeed);
 
         RotateToward(moveDirection);
+    }
+
+    private void MoveToward(Vector3 targetPosition, float speed)
+    {
+        Vector3 nextPosition = Vector3.MoveTowards(
+            transform.position,
+            targetPosition,
+            speed * Time.deltaTime);
+
+        Vector3 movement = nextPosition - transform.position;
+
+        if (movement.sqrMagnitude <= 0.000001f)
+        {
+            return;
+        }
+
+        if (characterController == null || !characterController.enabled)
+        {
+            return;
+        }
+
+        characterController.Move(movement);
     }
 
     private Transform GetCurrentWaypoint()
