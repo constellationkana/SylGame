@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -10,6 +11,8 @@ using UnityEngine.UI;
 /// </summary>
 public class PauseMenu : MonoBehaviour
 {
+    private const string MainMenuSceneName = "MainMenu";
+
     private static PauseMenu activeInstance;
 
     [Header("UI")]
@@ -24,6 +27,11 @@ public class PauseMenu : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void BootstrapPauseMenu()
     {
+        if (SceneManager.GetActiveScene().name == MainMenuSceneName)
+        {
+            return;
+        }
+
         if (FindAnyObjectByType<PauseMenu>() != null)
         {
             return;
