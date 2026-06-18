@@ -43,7 +43,7 @@ public class EnemyPatrol : MonoBehaviour
 
         if (isChasing)
         {
-            isChasing = false;
+            StopChasingAndResumePatrol();
         }
 
         Patrol();
@@ -114,6 +114,12 @@ public class EnemyPatrol : MonoBehaviour
         RotateToward(moveDirection);
     }
 
+    private void StopChasingAndResumePatrol()
+    {
+        isChasing = false;
+        SetClosestWaypointAsCurrent();
+    }
+
     private void MoveToward(Vector3 targetPosition, float speed)
     {
         Vector3 nextPosition = Vector3.MoveTowards(
@@ -134,6 +140,41 @@ public class EnemyPatrol : MonoBehaviour
         }
 
         characterController.Move(movement);
+    }
+
+    private void SetClosestWaypointAsCurrent()
+    {
+        if (waypoints == null || waypoints.Length == 0)
+        {
+            currentWaypointIndex = 0;
+            return;
+        }
+
+        int closestWaypointIndex = currentWaypointIndex;
+        float closestDistanceSquared = float.PositiveInfinity;
+
+        for (int i = 0; i < waypoints.Length; i++)
+        {
+            Transform waypoint = waypoints[i];
+
+            if (waypoint == null)
+            {
+                continue;
+            }
+
+            Vector3 waypointPosition = waypoint.position;
+            waypointPosition.y = transform.position.y;
+
+            float distanceSquared = (waypointPosition - transform.position).sqrMagnitude;
+
+            if (distanceSquared < closestDistanceSquared)
+            {
+                closestDistanceSquared = distanceSquared;
+                closestWaypointIndex = i;
+            }
+        }
+
+        currentWaypointIndex = closestWaypointIndex;
     }
 
     private Transform GetCurrentWaypoint()
