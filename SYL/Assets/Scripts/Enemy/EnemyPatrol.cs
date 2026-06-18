@@ -20,8 +20,22 @@ public class EnemyPatrol : MonoBehaviour
     [Min(0f)]
     [SerializeField] private float stoppingDistance = 1f;
 
+    [Header("Investigation")]
+    [Tooltip("How long the enemy waits at the last known player position before returning to patrol.")]
+    [Min(0f)]
+    [SerializeField] private float investigationDuration = 2f;
+    [Tooltip("How fast the enemy turns while looking around at the last known player position.")]
+    [Min(0f)]
+    [SerializeField] private float investigationRotationSpeed = 90f;
+    [Tooltip("If enabled, the enemy rotates while waiting at the last known player position.")]
+    [SerializeField] private bool enableLookAround = true;
+
     private int currentWaypointIndex;
     private bool isChasing;
+    private bool isInvestigating;
+    private bool hasLastKnownPlayerPosition;
+    private float investigationEndTime;
+    private Vector3 lastKnownPlayerPosition;
     private NavMeshAgent navMeshAgent;
 
     private void Awake()
@@ -51,7 +65,14 @@ public class EnemyPatrol : MonoBehaviour
 
         if (isChasing)
         {
-            StopChasingAndResumePatrol();
+            StartInvestigating();
+            return;
+        }
+
+        if (isInvestigating)
+        {
+            InvestigateLastKnownPosition();
+            return;
         }
 
         Patrol();
@@ -98,6 +119,10 @@ public class EnemyPatrol : MonoBehaviour
             isChasing = true;
         }
 
+        isInvestigating = false;
+        hasLastKnownPlayerPosition = true;
+        lastKnownPlayerPosition = enemyDetection.Player.position;
+
         Vector3 directionToPlayer = enemyDetection.Player.position - transform.position;
         directionToPlayer.y = 0f;
 
@@ -127,9 +152,71 @@ public class EnemyPatrol : MonoBehaviour
         RotateTowardAgentMovement();
     }
 
-    private void StopChasingAndResumePatrol()
+    private void StartInvestigating()
     {
         isChasing = false;
+
+        if (!hasLastKnownPlayerPosition)
+        {
+            ResumePatrolFromCurrentPosition();
+            return;
+        }
+
+        isInvestigating = true;
+        investigationEndTime = 0f;
+
+        if (!CanUseAgent())
+        {
+            ResumePatrolFromCurrentPosition();
+            return;
+        }
+
+        navMeshAgent.speed = movementSpeed;
+        navMeshAgent.stoppingDistance = 0f;
+        SetDestination(lastKnownPlayerPosition);
+    }
+
+    private void InvestigateLastKnownPosition()
+    {
+        if (!CanUseAgent())
+        {
+            ResumePatrolFromCurrentPosition();
+            return;
+        }
+
+        if (!HasReachedDestination(lastKnownPlayerPosition))
+        {
+            navMeshAgent.speed = movementSpeed;
+            navMeshAgent.stoppingDistance = 0f;
+            SetDestination(lastKnownPlayerPosition);
+            RotateTowardAgentMovement();
+            return;
+        }
+
+        StopNavigation();
+
+        if (investigationEndTime <= 0f)
+        {
+            investigationEndTime = Time.time + investigationDuration;
+        }
+
+        if (enableLookAround)
+        {
+            transform.Rotate(Vector3.up, investigationRotationSpeed * Time.deltaTime);
+        }
+
+        if (Time.time >= investigationEndTime)
+        {
+            ResumePatrolFromCurrentPosition();
+        }
+    }
+
+    private void ResumePatrolFromCurrentPosition()
+    {
+        isChasing = false;
+        isInvestigating = false;
+        hasLastKnownPlayerPosition = false;
+        investigationEndTime = 0f;
         SetClosestWaypointAsCurrent();
         StopNavigation();
     }
@@ -172,10 +259,15 @@ public class EnemyPatrol : MonoBehaviour
             return false;
         }
 
-        Vector3 waypointPosition = currentWaypoint.position;
-        waypointPosition.y = transform.position.y;
+        return HasReachedDestination(currentWaypoint.position);
+    }
 
-        return Vector3.Distance(transform.position, waypointPosition) <= waypointReachDistance;
+    private bool HasReachedDestination(Vector3 destination)
+    {
+        Vector3 destinationPosition = destination;
+        destinationPosition.y = transform.position.y;
+
+        return Vector3.Distance(transform.position, destinationPosition) <= waypointReachDistance;
     }
 
     private void StopNavigation()
@@ -291,5 +383,7 @@ public class EnemyPatrol : MonoBehaviour
         waypointReachDistance = Mathf.Max(0f, waypointReachDistance);
         chaseSpeed = Mathf.Max(0f, chaseSpeed);
         stoppingDistance = Mathf.Max(0f, stoppingDistance);
+        investigationDuration = Mathf.Max(0f, investigationDuration);
+        investigationRotationSpeed = Mathf.Max(0f, investigationRotationSpeed);
     }
 }
