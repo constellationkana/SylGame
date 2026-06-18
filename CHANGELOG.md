@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- No changes yet.
+
+## v0.2.0 - Documentation, Cleanup, and Optimization
+
+### Added
+- Main menu scene flow.
+- Pause menu and pause-state handling.
+- Game state manager for gameplay, pause, game-over, and level-complete states.
+- Enemy line-of-sight detection.
+- Enemy last-known-position investigation behavior.
+- NavMesh-based enemy navigation.
+- Enemy prefab.
+- Level2.
+- XML documentation for major gameplay systems.
+
+### Changed
+- Improved code maintainability with concise summaries on player health, player attack, enemy health, enemy detection, enemy patrol, exit door, objective, game state, pause menu, and main menu systems.
+- Cached repeated squared-distance thresholds in enemy AI and contact-damage checks.
+- Reduced avoidable player-attack console warning spam when no camera is available.
+- Kept gameplay behavior unchanged during cleanup.
+
+### Fixed
+- Removed an obsolete pause-menu placeholder comment.
+
+## v0.1.0 - Prototype
+
 ### Changed
 - Prepared the project for the `v0.1.0` prototype release.
 - Set the playable GameScene as the only enabled build scene.
@@ -13,8 +39,6 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Assigned serialized PlayerAttack camera-controller and attack-radius values in GameScene.
-
-## v0.1.0 - Prototype
 
 ### Added
 - Player movement

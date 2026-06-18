@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Detects whether the assigned player is within range and visible through line of sight.
+/// </summary>
 public class EnemyDetection : MonoBehaviour
 {
     [Header("Detection")]
@@ -16,15 +19,27 @@ public class EnemyDetection : MonoBehaviour
     [SerializeField] private bool showVisionDebug;
 
     private bool playerDetected;
+    private float detectionRadiusSquared;
 
+    /// <summary>
+    /// Gets whether the player is currently within detection range and line of sight.
+    /// </summary>
     public bool PlayerDetected
     {
         get { return playerDetected; }
     }
 
+    /// <summary>
+    /// Gets the player transform this detector is tracking.
+    /// </summary>
     public Transform Player
     {
         get { return player; }
+    }
+
+    private void Awake()
+    {
+        CacheDetectionRadius();
     }
 
     private void Update()
@@ -51,7 +66,6 @@ public class EnemyDetection : MonoBehaviour
 
     private bool IsPlayerInRange()
     {
-        float detectionRadiusSquared = detectionRadius * detectionRadius;
         Vector3 enemyToPlayer = player.position - transform.position;
 
         return enemyToPlayer.sqrMagnitude <= detectionRadiusSquared;
@@ -98,6 +112,12 @@ public class EnemyDetection : MonoBehaviour
     private void OnValidate()
     {
         detectionRadius = Mathf.Max(0f, detectionRadius);
+        CacheDetectionRadius();
+    }
+
+    private void CacheDetectionRadius()
+    {
+        detectionRadiusSquared = detectionRadius * detectionRadius;
     }
 
     private void OnDrawGizmosSelected()

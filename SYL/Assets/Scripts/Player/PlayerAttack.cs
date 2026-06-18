@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Handles player melee-style attacks using a short sphere cast from the active camera.
+/// </summary>
 public class PlayerAttack : MonoBehaviour
 {
     [Header("Attack")]
@@ -18,6 +21,8 @@ public class PlayerAttack : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip attackClip;
+
+    private bool warnedMissingPlayerCamera;
 
     private void Awake()
     {
@@ -53,7 +58,7 @@ public class PlayerAttack : MonoBehaviour
 
         if (playerCamera == null)
         {
-            Debug.LogWarning($"{nameof(PlayerAttack)} could not attack because no player camera was found.", this);
+            WarnMissingPlayerCameraOnce();
             return;
         }
 
@@ -73,6 +78,20 @@ public class PlayerAttack : MonoBehaviour
         }
 
         enemyHealth.TakeDamage(attackDamage);
+    }
+
+    /// <summary>
+    /// Reports an attack attempt, if needed, without spamming the console every click.
+    /// </summary>
+    private void WarnMissingPlayerCameraOnce()
+    {
+        if (warnedMissingPlayerCamera)
+        {
+            return;
+        }
+
+        warnedMissingPlayerCamera = true;
+        Debug.LogWarning($"{nameof(PlayerAttack)} could not attack because no player camera was found.", this);
     }
 
     private Vector3 GetAttackOriginPosition()

@@ -20,9 +20,12 @@ public class EnemyContactDamage : MonoBehaviour
     private PlayerHealth cachedPlayerHealth;
     private bool playerInAttackRange;
     private float nextDamageTime;
+    private float attackRangeSquared;
 
     private void Awake()
     {
+        CacheAttackRange();
+
         if (enemyDetection == null)
         {
             enemyDetection = GetComponent<EnemyDetection>();
@@ -88,7 +91,6 @@ public class EnemyContactDamage : MonoBehaviour
 
     private bool IsPlayerInAttackRange(Transform playerTransform)
     {
-        float attackRangeSquared = attackRange * attackRange;
         Vector3 enemyToPlayer = playerTransform.position - transform.position;
 
         return enemyToPlayer.sqrMagnitude <= attackRangeSquared;
@@ -111,6 +113,12 @@ public class EnemyContactDamage : MonoBehaviour
         damageAmount = Mathf.Max(1, damageAmount);
         damageInterval = Mathf.Max(0.01f, damageInterval);
         attackRange = Mathf.Max(0f, attackRange);
+        CacheAttackRange();
+    }
+
+    private void CacheAttackRange()
+    {
+        attackRangeSquared = attackRange * attackRange;
     }
 
     private void OnDrawGizmosSelected()

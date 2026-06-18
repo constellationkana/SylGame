@@ -108,6 +108,9 @@ public class PauseMenu : MonoBehaviour
         TogglePause();
     }
 
+    /// <summary>
+    /// Switches between paused and resumed gameplay.
+    /// </summary>
     public void TogglePause()
     {
         if (isPaused)
@@ -119,6 +122,9 @@ public class PauseMenu : MonoBehaviour
         Pause();
     }
 
+    /// <summary>
+    /// Pauses active gameplay, shows the pause panel, and unlocks the cursor.
+    /// </summary>
     public void Pause()
     {
         if (!GameStateManager.Instance.IsPlaying)
@@ -138,6 +144,9 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Resumes paused gameplay, hides the pause panel, and restores the gameplay cursor lock.
+    /// </summary>
     public void Resume()
     {
         if (!isPaused && !GameStateManager.Instance.IsPaused)
@@ -157,9 +166,11 @@ public class PauseMenu : MonoBehaviour
         LockCursor();
     }
 
+    /// <summary>
+    /// Reserved for future main-menu scene flow from the pause menu.
+    /// </summary>
     public void Quit()
     {
-        // Placeholder for future scene flow.
     }
 
     private void EnsurePausePanel()

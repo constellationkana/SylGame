@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Completes the level when interacted with after its assigned objective unlocks it.
+/// </summary>
 [RequireComponent(typeof(Collider))]
 public class ExitDoor : MonoBehaviour, IInteractable
 {
@@ -59,6 +62,9 @@ public class ExitDoor : MonoBehaviour, IInteractable
         }
     }
 
+    /// <summary>
+    /// Attempts to complete the level if the exit has been unlocked.
+    /// </summary>
     public void Interact()
     {
         if (levelCompleted)
