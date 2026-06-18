@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class EnemyPatrol : MonoBehaviour
 {
     [Header("Patrol")]
@@ -20,9 +21,12 @@ public class EnemyPatrol : MonoBehaviour
 
     private int currentWaypointIndex;
     private bool isChasing;
+    private CharacterController characterController;
 
     private void Awake()
     {
+        characterController = GetComponent<CharacterController>();
+
         if (enemyDetection == null)
         {
             enemyDetection = GetComponent<EnemyDetection>();
@@ -39,7 +43,7 @@ public class EnemyPatrol : MonoBehaviour
 
         if (isChasing)
         {
-            isChasing = false;
+            StopChasingAndResumePatrol();
         }
 
         Patrol();
@@ -66,10 +70,7 @@ public class EnemyPatrol : MonoBehaviour
         }
 
         Vector3 moveDirection = directionToWaypoint.normalized;
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            targetPosition,
-            movementSpeed * Time.deltaTime);
+        MoveToward(targetPosition, movementSpeed);
 
         RotateToward(moveDirection);
     }
@@ -108,12 +109,72 @@ public class EnemyPatrol : MonoBehaviour
         }
 
         Vector3 stoppingPosition = targetPosition - (moveDirection * stoppingDistance);
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            stoppingPosition,
-            chaseSpeed * Time.deltaTime);
+        MoveToward(stoppingPosition, chaseSpeed);
 
         RotateToward(moveDirection);
+    }
+
+    private void StopChasingAndResumePatrol()
+    {
+        isChasing = false;
+        SetClosestWaypointAsCurrent();
+    }
+
+    private void MoveToward(Vector3 targetPosition, float speed)
+    {
+        Vector3 nextPosition = Vector3.MoveTowards(
+            transform.position,
+            targetPosition,
+            speed * Time.deltaTime);
+
+        Vector3 movement = nextPosition - transform.position;
+
+        if (movement.sqrMagnitude <= 0.000001f)
+        {
+            return;
+        }
+
+        if (characterController == null || !characterController.enabled)
+        {
+            return;
+        }
+
+        characterController.Move(movement);
+    }
+
+    private void SetClosestWaypointAsCurrent()
+    {
+        if (waypoints == null || waypoints.Length == 0)
+        {
+            currentWaypointIndex = 0;
+            return;
+        }
+
+        int closestWaypointIndex = currentWaypointIndex;
+        float closestDistanceSquared = float.PositiveInfinity;
+
+        for (int i = 0; i < waypoints.Length; i++)
+        {
+            Transform waypoint = waypoints[i];
+
+            if (waypoint == null)
+            {
+                continue;
+            }
+
+            Vector3 waypointPosition = waypoint.position;
+            waypointPosition.y = transform.position.y;
+
+            float distanceSquared = (waypointPosition - transform.position).sqrMagnitude;
+
+            if (distanceSquared < closestDistanceSquared)
+            {
+                closestDistanceSquared = distanceSquared;
+                closestWaypointIndex = i;
+            }
+        }
+
+        currentWaypointIndex = closestWaypointIndex;
     }
 
     private Transform GetCurrentWaypoint()
