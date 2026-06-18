@@ -4,7 +4,7 @@ SylGame is a Unity 6 prototype with a complete playable loop: collect the requir
 
 ## Prototype Status
 
-Current target: `v0.2.0`
+Current release: `v0.2.0`
 
 The prototype includes:
 
