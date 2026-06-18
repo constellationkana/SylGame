@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// Drives enemy NavMesh patrol, chase, and last-known-position investigation behavior.
+/// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyPatrol : MonoBehaviour
 {
@@ -37,10 +40,12 @@ public class EnemyPatrol : MonoBehaviour
     private float investigationEndTime;
     private Vector3 lastKnownPlayerPosition;
     private NavMeshAgent navMeshAgent;
+    private float waypointReachDistanceSquared;
 
     private void Awake()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
+        CacheReachDistance();
 
         if (enemyDetection == null)
         {
@@ -267,7 +272,7 @@ public class EnemyPatrol : MonoBehaviour
         Vector3 destinationPosition = destination;
         destinationPosition.y = transform.position.y;
 
-        return Vector3.Distance(transform.position, destinationPosition) <= waypointReachDistance;
+        return (transform.position - destinationPosition).sqrMagnitude <= waypointReachDistanceSquared;
     }
 
     private void StopNavigation()
@@ -385,5 +390,11 @@ public class EnemyPatrol : MonoBehaviour
         stoppingDistance = Mathf.Max(0f, stoppingDistance);
         investigationDuration = Mathf.Max(0f, investigationDuration);
         investigationRotationSpeed = Mathf.Max(0f, investigationRotationSpeed);
+        CacheReachDistance();
+    }
+
+    private void CacheReachDistance()
+    {
+        waypointReachDistanceSquared = waypointReachDistance * waypointReachDistance;
     }
 }

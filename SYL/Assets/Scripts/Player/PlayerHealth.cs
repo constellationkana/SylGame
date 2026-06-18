@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Tracks player health, raises health events, and handles game-over restart flow.
+/// </summary>
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Health")]
@@ -21,14 +24,27 @@ public class PlayerHealth : MonoBehaviour
     private int currentHealth;
     private bool isDead;
 
+    /// <summary>
+    /// Raised whenever the player's current health changes.
+    /// </summary>
     public event System.Action<int> HealthChanged;
+
+    /// <summary>
+    /// Raised whenever positive damage is applied to the player.
+    /// </summary>
     public event System.Action<int> DamageTaken;
 
+    /// <summary>
+    /// Gets the player's current health value.
+    /// </summary>
     public int CurrentHealth
     {
         get { return currentHealth; }
     }
 
+    /// <summary>
+    /// Gets whether the player has entered the game-over state.
+    /// </summary>
     public bool IsDead
     {
         get { return isDead; }
@@ -85,6 +101,10 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Applies damage to the player and triggers death when health reaches zero.
+    /// </summary>
+    /// <param name="amount">Amount of damage requested. Negative values are ignored.</param>
     public void TakeDamage(int amount)
     {
         if (isDead)

@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Tracks collectible progress and raises objective events when the target count is reached.
+/// </summary>
 public class CollectibleObjective : MonoBehaviour
 {
     [SerializeField] private int targetCollectibleCount = 3;

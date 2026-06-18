@@ -1,11 +1,17 @@
 using UnityEngine;
 
+/// <summary>
+/// Provides a simple scene-local game state singleton for gameplay, pause, win, and game-over states.
+/// </summary>
 public class GameStateManager : MonoBehaviour
 {
     private static GameStateManager instance;
 
     [SerializeField] private GameState currentState = GameState.Playing;
 
+    /// <summary>
+    /// Gets the active game state manager, creating one if the scene does not provide it.
+    /// </summary>
     public static GameStateManager Instance
     {
         get
@@ -25,16 +31,25 @@ public class GameStateManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets the current high-level game state.
+    /// </summary>
     public GameState CurrentState
     {
         get { return currentState; }
     }
 
+    /// <summary>
+    /// Gets whether gameplay is currently active.
+    /// </summary>
     public bool IsPlaying
     {
         get { return currentState == GameState.Playing; }
     }
 
+    /// <summary>
+    /// Gets whether gameplay is currently paused.
+    /// </summary>
     public bool IsPaused
     {
         get { return currentState == GameState.Paused; }
@@ -61,6 +76,10 @@ public class GameStateManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the current high-level game state.
+    /// </summary>
+    /// <param name="state">The new state to apply.</param>
     public void SetState(GameState state)
     {
         currentState = state;

@@ -1,6 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// Manages enemy health, damage/death feedback, and death-time component shutdown.
+/// </summary>
 public class EnemyHealth : MonoBehaviour
 {
     [Header("Health")]
@@ -46,11 +49,17 @@ public class EnemyHealth : MonoBehaviour
     private Coroutine damageFlashCoroutine;
     private const string MaterialColorPropertyName = "_Color";
 
+    /// <summary>
+    /// Gets the enemy's current health value.
+    /// </summary>
     public int CurrentHealth
     {
         get { return currentHealth; }
     }
 
+    /// <summary>
+    /// Gets whether this enemy has already died.
+    /// </summary>
     public bool IsDead
     {
         get { return isDead; }
@@ -68,6 +77,10 @@ public class EnemyHealth : MonoBehaviour
         AssignDefaultReferences();
     }
 
+    /// <summary>
+    /// Applies damage to the enemy and starts death handling when health reaches zero.
+    /// </summary>
+    /// <param name="damageAmount">Amount of damage requested. Negative values are ignored.</param>
     public void TakeDamage(int damageAmount)
     {
         if (isDead)

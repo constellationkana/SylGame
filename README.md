@@ -4,16 +4,17 @@ SylGame is a Unity 6 prototype with a complete playable loop: collect the requir
 
 ## Prototype Status
 
-Current target: `v0.1.0`
+Current target: `v0.2.0`
 
 The prototype includes:
 
 - Player movement, sprinting, and jumping
 - First-person and third-person cameras with runtime switching
 - Interaction, collectible, objective, and exit-door systems
-- HUD, game over, restart, and level complete UI
-- Enemy patrol, detection, chase, contact damage, health, and death feedback
-- Level blockout v01
+- Main menu, pause menu, HUD, game over, restart, and level complete UI
+- Enemy patrol, line-of-sight detection, chase, investigation, contact damage, health, and death feedback
+- Game state management for gameplay, pause, game over, and level completion
+- GameScene and Level2
 
 ## Unity Version
 
@@ -28,4 +29,5 @@ Open the project from `SYL/` with Unity `6000.4.10f1`.
 - Attack: Left Mouse Button
 - Interact: E
 - Switch camera: V
+- Pause: Escape
 - Restart after game over: R

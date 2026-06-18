@@ -55,6 +55,9 @@ public class MainMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Loads the configured gameplay scene.
+    /// </summary>
     public void Play()
     {
         if (string.IsNullOrWhiteSpace(gameplaySceneName))
@@ -66,6 +69,9 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene(gameplaySceneName);
     }
 
+    /// <summary>
+    /// Exits play mode in the editor or quits the built application.
+    /// </summary>
     public void Quit()
     {
 #if UNITY_EDITOR
