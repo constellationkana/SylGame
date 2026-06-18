@@ -125,6 +125,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a4afabf65c48640b132de4dc1f1c2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ExitDoor
+  nextSceneName: 
+  nextSceneLoadDelay: 0.75
   objective: {fileID: 0}
   levelCompleteUI: {fileID: 0}
   audioSource: {fileID: 0}

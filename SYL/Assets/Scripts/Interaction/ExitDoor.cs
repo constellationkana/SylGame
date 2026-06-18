@@ -1,8 +1,14 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Collider))]
 public class ExitDoor : MonoBehaviour, IInteractable
 {
+    [Header("Scene Flow")]
+    [SerializeField] private string nextSceneName = "";
+    [Min(0f)]
+    [SerializeField] private float nextSceneLoadDelay = 0.75f;
+
     [SerializeField] private CollectibleObjective objective;
     [SerializeField] private LevelCompleteUI levelCompleteUI;
 
@@ -72,6 +78,28 @@ public class ExitDoor : MonoBehaviour, IInteractable
         {
             levelCompleteUI.ShowLevelComplete();
         }
+
+        if (!string.IsNullOrWhiteSpace(nextSceneName))
+        {
+            StartCoroutine(LoadNextSceneAfterDelay());
+        }
+    }
+
+    private System.Collections.IEnumerator LoadNextSceneAfterDelay()
+    {
+        if (nextSceneLoadDelay > 0f)
+        {
+            yield return new WaitForSecondsRealtime(nextSceneLoadDelay);
+        }
+
+        if (!Application.CanStreamedLevelBeLoaded(nextSceneName))
+        {
+            Debug.LogError($"{nameof(ExitDoor)} cannot load scene '{nextSceneName}'. Add it to Build Settings or clear the next scene name.", this);
+            yield break;
+        }
+
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(nextSceneName);
     }
 
     private void HandleObjectiveCompleted()
