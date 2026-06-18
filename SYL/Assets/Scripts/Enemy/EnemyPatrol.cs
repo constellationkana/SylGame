@@ -42,6 +42,15 @@ public class EnemyPatrol : MonoBehaviour
     private NavMeshAgent navMeshAgent;
     private float waypointReachDistanceSquared;
 
+    /// <summary>
+    /// Updates how close this enemy gets during chase movement before stopping.
+    /// </summary>
+    /// <param name="distance">Requested stopping distance. Negative values are clamped to zero.</param>
+    public void SetChaseStoppingDistance(float distance)
+    {
+        stoppingDistance = Mathf.Max(0f, distance);
+    }
+
     private void Awake()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
