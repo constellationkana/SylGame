@@ -10,6 +10,11 @@ public class ThirdPersonController : MonoBehaviour
     [SerializeField] private float sprintSpeed = 7f;
     [SerializeField] private float rotationSmoothTime = 0.12f;
 
+    [Header("Dash")]
+    [SerializeField] private float dashDistance = 5f;
+    [SerializeField] private float dashDuration = 0.18f;
+    [SerializeField] private float dashCooldown = 0.75f;
+
     [Header("Gravity")]
     [SerializeField] private float jumpHeight = 1.5f;
     [SerializeField] private float gravity = -20f;
@@ -19,6 +24,7 @@ public class ThirdPersonController : MonoBehaviour
     [SerializeField] private string moveActionName = "Move";
     [SerializeField] private string sprintActionName = "Sprint";
     [SerializeField] private string jumpActionName = "Jump";
+    [SerializeField] private string dashActionName = "Dash";
 
     [Header("Camera")]
     [SerializeField] private Transform cameraTransform;
@@ -28,9 +34,13 @@ public class ThirdPersonController : MonoBehaviour
     private InputAction moveAction;
     private InputAction sprintAction;
     private InputAction jumpAction;
+    private InputAction dashAction;
 
     private float verticalVelocity;
     private float currentRotationVelocity;
+    private float dashTimeRemaining;
+    private float dashCooldownRemaining;
+    private Vector3 dashDirection;
     private bool firstPersonCameraActive;
 
     private void Awake()
@@ -51,11 +61,12 @@ public class ThirdPersonController : MonoBehaviour
         moveAction = playerInput.actions.FindAction(moveActionName);
         sprintAction = playerInput.actions.FindAction(sprintActionName);
         jumpAction = playerInput.actions.FindAction(jumpActionName);
+        dashAction = playerInput.actions.FindAction(dashActionName);
 
-        if (moveAction == null || sprintAction == null || jumpAction == null)
+        if (moveAction == null || sprintAction == null || jumpAction == null || dashAction == null)
         {
             Debug.LogError(
-                $"{nameof(ThirdPersonController)} could not find '{moveActionName}', '{sprintActionName}', and/or '{jumpActionName}' in the PlayerInput actions asset.",
+                $"{nameof(ThirdPersonController)} could not find '{moveActionName}', '{sprintActionName}', '{jumpActionName}', and/or '{dashActionName}' in the PlayerInput actions asset.",
                 this);
             enabled = false;
         }
@@ -66,6 +77,7 @@ public class ThirdPersonController : MonoBehaviour
         moveAction?.Enable();
         sprintAction?.Enable();
         jumpAction?.Enable();
+        dashAction?.Enable();
     }
 
     private void OnDisable()
@@ -73,6 +85,7 @@ public class ThirdPersonController : MonoBehaviour
         moveAction?.Disable();
         sprintAction?.Disable();
         jumpAction?.Disable();
+        dashAction?.Disable();
     }
 
     private void Update()
@@ -82,10 +95,13 @@ public class ThirdPersonController : MonoBehaviour
             return;
         }
 
-        if (moveAction == null || sprintAction == null || jumpAction == null)
+        if (moveAction == null || sprintAction == null || jumpAction == null || dashAction == null)
         {
             return;
         }
+
+        float deltaTime = Time.deltaTime;
+        UpdateDashCooldown(deltaTime);
 
         Vector2 moveInput = moveAction.ReadValue<Vector2>();
 
@@ -101,13 +117,15 @@ public class ThirdPersonController : MonoBehaviour
             RotateTowardMovement(moveDirection);
         }
 
+        TryStartDash(moveDirection);
         ApplyJumpAndGravity();
 
         float speed = sprintAction.IsPressed() ? sprintSpeed : walkSpeed;
-        Vector3 velocity = moveDirection * speed;
+        Vector3 velocity = GetHorizontalVelocity(moveDirection, speed);
         velocity.y = verticalVelocity;
 
-        characterController.Move(velocity * Time.deltaTime);
+        characterController.Move(velocity * deltaTime);
+        UpdateDashTimer(deltaTime);
     }
 
     private Vector3 GetCameraRelativeMoveDirection(Vector2 moveInput)
@@ -175,6 +193,67 @@ public class ThirdPersonController : MonoBehaviour
         }
     }
 
+    private void TryStartDash(Vector3 moveDirection)
+    {
+        if (!dashAction.WasPressedThisFrame() || !CanDash())
+        {
+            return;
+        }
+
+        dashDirection = moveDirection.sqrMagnitude > 0.01f
+            ? moveDirection.normalized
+            : GetForwardDashDirection();
+
+        dashTimeRemaining = dashDuration;
+        dashCooldownRemaining = dashCooldown;
+    }
+
+    private bool CanDash()
+    {
+        return dashTimeRemaining <= 0f
+            && dashCooldownRemaining <= 0f
+            && characterController.isGrounded;
+    }
+
+    private Vector3 GetHorizontalVelocity(Vector3 moveDirection, float speed)
+    {
+        if (dashTimeRemaining > 0f)
+        {
+            return dashDirection * (dashDistance / dashDuration);
+        }
+
+        return moveDirection * speed;
+    }
+
+    private Vector3 GetForwardDashDirection()
+    {
+        Vector3 forward = transform.forward;
+        forward.y = 0f;
+
+        if (forward.sqrMagnitude < 0.01f)
+        {
+            return Vector3.forward;
+        }
+
+        return forward.normalized;
+    }
+
+    private void UpdateDashCooldown(float deltaTime)
+    {
+        if (dashCooldownRemaining > 0f)
+        {
+            dashCooldownRemaining = Mathf.Max(0f, dashCooldownRemaining - deltaTime);
+        }
+    }
+
+    private void UpdateDashTimer(float deltaTime)
+    {
+        if (dashTimeRemaining > 0f)
+        {
+            dashTimeRemaining = Mathf.Max(0f, dashTimeRemaining - deltaTime);
+        }
+    }
+
     public void SetFirstPersonCameraActive(bool isActive)
     {
         firstPersonCameraActive = isActive;
@@ -200,5 +279,12 @@ public class ThirdPersonController : MonoBehaviour
         {
             cameraTransform = mainCamera.transform;
         }
+    }
+
+    private void OnValidate()
+    {
+        dashDistance = Mathf.Max(0f, dashDistance);
+        dashDuration = Mathf.Max(0.01f, dashDuration);
+        dashCooldown = Mathf.Max(0f, dashCooldown);
     }
 }

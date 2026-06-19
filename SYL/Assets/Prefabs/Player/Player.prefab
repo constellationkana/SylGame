@@ -1251,12 +1251,16 @@ MonoBehaviour:
   walkSpeed: 4
   sprintSpeed: 7
   rotationSmoothTime: 0.12
+  dashDistance: 5
+  dashDuration: 0.18
+  dashCooldown: 0.75
   jumpHeight: 1.5
   gravity: -20
   groundedGravity: -2
   moveActionName: Move
   sprintActionName: Sprint
   jumpActionName: Jump
+  dashActionName: Dash
   cameraTransform: {fileID: 0}
 --- !u!114 &8511704019578071916
 MonoBehaviour:
