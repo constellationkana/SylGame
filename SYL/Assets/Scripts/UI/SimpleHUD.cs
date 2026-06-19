@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Updates simple on-screen HUD text for health, collectible count, and objective status.
@@ -11,10 +12,17 @@ public class SimpleHUD : MonoBehaviour
     [SerializeField] private TMP_Text objectiveText;
     [SerializeField] private GameObject gameOverPanel;
 
+    [Header("Dash Cooldown")]
+    [SerializeField] private Slider dashCooldownSlider;
+    [SerializeField] private Image dashCooldownFill;
+    [SerializeField] private Color dashCooldownReadyColor = Color.green;
+    [SerializeField] private Color dashCooldownEmptyColor = Color.red;
+
     [Header("Scene References")]
     [SerializeField] private CollectibleManager collectibleManager;
     [SerializeField] private CollectibleObjective collectibleObjective;
     [SerializeField] private PlayerHealth playerHealth;
+    [SerializeField] private ThirdPersonController playerController;
 
     private bool isSubscribedToCollectibles;
     private bool isSubscribedToObjective;
@@ -23,6 +31,7 @@ public class SimpleHUD : MonoBehaviour
     private void Awake()
     {
         SetGameOverPanelVisible(false);
+        EnsureDashCooldownSlider();
     }
 
     private void OnEnable()
@@ -36,6 +45,11 @@ public class SimpleHUD : MonoBehaviour
         ConnectToSceneSystems(true);
         WarnAboutMissingTextReferences();
         Refresh();
+    }
+
+    private void Update()
+    {
+        RefreshDashCooldown();
     }
 
     private void OnDisable()
@@ -68,6 +82,7 @@ public class SimpleHUD : MonoBehaviour
         RefreshCollectibles();
         RefreshObjective();
         RefreshGameOverPanel();
+        RefreshDashCooldown();
     }
 
     private void ConnectToSceneSystems(bool showWarnings)
@@ -90,6 +105,11 @@ public class SimpleHUD : MonoBehaviour
         if (playerHealth == null)
         {
             playerHealth = FindAnyObjectByType<PlayerHealth>();
+        }
+
+        if (playerController == null)
+        {
+            playerController = FindAnyObjectByType<ThirdPersonController>();
         }
 
         if (collectibleManager != null && !isSubscribedToCollectibles)
@@ -188,6 +208,99 @@ public class SimpleHUD : MonoBehaviour
         }
 
         SetGameOverPanelVisible(playerHealth.CurrentHealth <= 0);
+    }
+
+    private void RefreshDashCooldown()
+    {
+        if (dashCooldownSlider == null)
+        {
+            return;
+        }
+
+        if (playerController == null)
+        {
+            playerController = FindAnyObjectByType<ThirdPersonController>();
+        }
+
+        float progress = playerController != null ? playerController.DashCooldownProgress : 1f;
+        dashCooldownSlider.SetValueWithoutNotify(progress);
+
+        if (dashCooldownFill != null)
+        {
+            dashCooldownFill.color = Color.Lerp(dashCooldownEmptyColor, dashCooldownReadyColor, progress);
+        }
+    }
+
+    private void EnsureDashCooldownSlider()
+    {
+        if (dashCooldownSlider != null)
+        {
+            if (dashCooldownFill == null && dashCooldownSlider.fillRect != null)
+            {
+                dashCooldownFill = dashCooldownSlider.fillRect.GetComponent<Image>();
+            }
+
+            return;
+        }
+
+        dashCooldownSlider = CreateDashCooldownSlider();
+    }
+
+    private Slider CreateDashCooldownSlider()
+    {
+        GameObject sliderObject = new GameObject("DashCooldownSlider", typeof(RectTransform), typeof(Slider));
+        sliderObject.transform.SetParent(transform, false);
+
+        RectTransform sliderRect = sliderObject.GetComponent<RectTransform>();
+        sliderRect.anchorMin = new Vector2(0f, 1f);
+        sliderRect.anchorMax = new Vector2(0f, 1f);
+        sliderRect.pivot = new Vector2(0f, 1f);
+        sliderRect.anchoredPosition = new Vector2(20f, -95f);
+        sliderRect.sizeDelta = new Vector2(180f, 16f);
+
+        GameObject backgroundObject = new GameObject("Background", typeof(RectTransform), typeof(Image));
+        backgroundObject.transform.SetParent(sliderObject.transform, false);
+
+        RectTransform backgroundRect = backgroundObject.GetComponent<RectTransform>();
+        backgroundRect.anchorMin = Vector2.zero;
+        backgroundRect.anchorMax = Vector2.one;
+        backgroundRect.offsetMin = Vector2.zero;
+        backgroundRect.offsetMax = Vector2.zero;
+
+        Image backgroundImage = backgroundObject.GetComponent<Image>();
+        backgroundImage.color = new Color(0f, 0f, 0f, 0.45f);
+
+        GameObject fillAreaObject = new GameObject("Fill Area", typeof(RectTransform));
+        fillAreaObject.transform.SetParent(sliderObject.transform, false);
+
+        RectTransform fillAreaRect = fillAreaObject.GetComponent<RectTransform>();
+        fillAreaRect.anchorMin = Vector2.zero;
+        fillAreaRect.anchorMax = Vector2.one;
+        fillAreaRect.offsetMin = new Vector2(2f, 2f);
+        fillAreaRect.offsetMax = new Vector2(-2f, -2f);
+
+        GameObject fillObject = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+        fillObject.transform.SetParent(fillAreaObject.transform, false);
+
+        RectTransform fillRect = fillObject.GetComponent<RectTransform>();
+        fillRect.anchorMin = Vector2.zero;
+        fillRect.anchorMax = Vector2.one;
+        fillRect.offsetMin = Vector2.zero;
+        fillRect.offsetMax = Vector2.zero;
+
+        dashCooldownFill = fillObject.GetComponent<Image>();
+        dashCooldownFill.color = dashCooldownReadyColor;
+
+        Slider slider = sliderObject.GetComponent<Slider>();
+        slider.minValue = 0f;
+        slider.maxValue = 1f;
+        slider.value = 1f;
+        slider.interactable = false;
+        slider.transition = Selectable.Transition.None;
+        slider.fillRect = fillRect;
+        slider.targetGraphic = dashCooldownFill;
+
+        return slider;
     }
 
     private void SetGameOverPanelVisible(bool isVisible)

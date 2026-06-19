@@ -43,6 +43,19 @@ public class ThirdPersonController : MonoBehaviour
     private Vector3 dashDirection;
     private bool firstPersonCameraActive;
 
+    public float DashCooldownProgress
+    {
+        get
+        {
+            if (dashCooldown <= 0f)
+            {
+                return 1f;
+            }
+
+            return Mathf.Clamp01(1f - (dashCooldownRemaining / dashCooldown));
+        }
+    }
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
