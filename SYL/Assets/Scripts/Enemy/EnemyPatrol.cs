@@ -198,7 +198,7 @@ public class EnemyPatrol : MonoBehaviour
             return;
         }
 
-        if (!HasReachedDestination(lastKnownPlayerPosition))
+        if (!HasReachedInvestigationDestination())
         {
             navMeshAgent.speed = movementSpeed;
             navMeshAgent.stoppingDistance = 0f;
@@ -232,7 +232,18 @@ public class EnemyPatrol : MonoBehaviour
         hasLastKnownPlayerPosition = false;
         investigationEndTime = 0f;
         SetClosestWaypointAsCurrent();
-        StopNavigation();
+
+        Transform currentWaypoint = GetCurrentWaypoint();
+        if (currentWaypoint == null || !CanUseAgent())
+        {
+            StopNavigation();
+            return;
+        }
+
+        navMeshAgent.speed = movementSpeed;
+        navMeshAgent.stoppingDistance = 0f;
+        SetDestination(currentWaypoint.position);
+        RotateToward(currentWaypoint.position - transform.position);
     }
 
     private void ConfigureAgentDefaults()
@@ -282,6 +293,31 @@ public class EnemyPatrol : MonoBehaviour
         destinationPosition.y = transform.position.y;
 
         return (transform.position - destinationPosition).sqrMagnitude <= waypointReachDistanceSquared;
+    }
+
+    private bool HasReachedInvestigationDestination()
+    {
+        if (HasReachedDestination(lastKnownPlayerPosition))
+        {
+            return true;
+        }
+
+        if (!CanUseAgent() || navMeshAgent.pathPending)
+        {
+            return false;
+        }
+
+        if (navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
+        {
+            return true;
+        }
+
+        if (!navMeshAgent.hasPath)
+        {
+            return false;
+        }
+
+        return navMeshAgent.remainingDistance <= waypointReachDistance;
     }
 
     private void StopNavigation()

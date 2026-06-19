@@ -54,8 +54,13 @@ public class RangedEnemyAttack : MonoBehaviour
         }
 
         Transform player = enemyDetection.Player;
-        if (!enemyDetection.PlayerDetected || player == null || !IsPlayerInAttackRange(player))
+        PlayerHealth playerHealth = GetPlayerHealth(player);
+        if (!enemyDetection.PlayerDetected
+            || player == null
+            || (playerHealth != null && playerHealth.IsDead)
+            || !IsPlayerInAttackRange(player))
         {
+            ResetAttack();
             return;
         }
 
@@ -116,6 +121,16 @@ public class RangedEnemyAttack : MonoBehaviour
         return enemyToPlayer.sqrMagnitude <= attackRangeSquared;
     }
 
+    private PlayerHealth GetPlayerHealth(Transform player)
+    {
+        if (player == null)
+        {
+            return null;
+        }
+
+        return player.GetComponentInParent<PlayerHealth>();
+    }
+
     private void FacePlayer(Transform player)
     {
         Vector3 directionToPlayer = player.position - transform.position;
@@ -141,6 +156,11 @@ public class RangedEnemyAttack : MonoBehaviour
         }
 
         return transform.position + Vector3.up * aimHeightOffset + transform.forward * 0.6f;
+    }
+
+    private void ResetAttack()
+    {
+        nextFireTime = 0f;
     }
 
     private void AssignDefaultReferences()
