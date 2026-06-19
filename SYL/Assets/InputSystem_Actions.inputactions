@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "InputSystem_Actions",
     "maps": [
         {
@@ -99,7 +100,7 @@
                     "name": "Dash",
                     "type": "Button",
                     "id": "4d29df34-f2d9-4ae6-89a6-d0b35ee43d1e",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -428,7 +429,7 @@
                 {
                     "name": "",
                     "id": "538db6e4-0f5b-4dc9-9324-d42a71de8c73",
-                    "path": "<Keyboard>/leftCtrl",
+                    "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
