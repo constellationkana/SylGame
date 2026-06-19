@@ -20,6 +20,8 @@ public class EnemyDetection : MonoBehaviour
 
     private bool playerDetected;
     private float detectionRadiusSquared;
+    private Transform cachedPlayerTransform;
+    private PlayerHealth cachedPlayerHealth;
 
     /// <summary>
     /// Gets whether the player is currently within detection range and line of sight.
@@ -44,7 +46,7 @@ public class EnemyDetection : MonoBehaviour
 
     private void Update()
     {
-        if (player == null)
+        if (player == null || !IsPlayerAlive())
         {
             if (playerDetected)
             {
@@ -97,6 +99,31 @@ public class EnemyDetection : MonoBehaviour
         }
 
         return !isBlocked;
+    }
+
+    private bool IsPlayerAlive()
+    {
+        PlayerHealth playerHealth = GetPlayerHealth();
+
+        return playerHealth == null || !playerHealth.IsDead;
+    }
+
+    private PlayerHealth GetPlayerHealth()
+    {
+        if (player == null)
+        {
+            cachedPlayerTransform = null;
+            cachedPlayerHealth = null;
+            return null;
+        }
+
+        if (cachedPlayerTransform != player)
+        {
+            cachedPlayerTransform = player;
+            cachedPlayerHealth = player.GetComponentInParent<PlayerHealth>();
+        }
+
+        return cachedPlayerHealth;
     }
 
     private Vector3 GetVisionStartPosition()

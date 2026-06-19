@@ -42,7 +42,10 @@ public class EnemyContactDamage : MonoBehaviour
         Transform playerTransform = GetPlayerTransform();
         PlayerHealth playerHealth = GetPlayerHealth(playerTransform);
 
-        if (playerTransform == null || playerHealth == null || !IsPlayerInAttackRange(playerTransform))
+        if (playerTransform == null
+            || playerHealth == null
+            || playerHealth.IsDead
+            || !IsPlayerInAttackRange(playerTransform))
         {
             ResetAttack();
             return;
