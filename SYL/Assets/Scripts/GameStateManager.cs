@@ -1,13 +1,35 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Provides a simple scene-local game state singleton for gameplay, pause, win, and game-over states.
 /// </summary>
 public class GameStateManager : MonoBehaviour
 {
+    private const string MainMenuSceneName = "MainMenu";
+
     private static GameStateManager instance;
 
     [SerializeField] private GameState currentState = GameState.Playing;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        instance = null;
+    }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    private static void ResetGameplayStateAfterSceneLoad()
+    {
+        Time.timeScale = 1f;
+
+        if (SceneManager.GetActiveScene().name == MainMenuSceneName)
+        {
+            return;
+        }
+
+        Instance.ResetToPlaying();
+    }
 
     /// <summary>
     /// Gets the active game state manager, creating one if the scene does not provide it.
@@ -65,7 +87,7 @@ public class GameStateManager : MonoBehaviour
         }
 
         instance = this;
-        currentState = GameState.Playing;
+        ResetToPlaying();
     }
 
     private void OnDestroy()
@@ -83,5 +105,14 @@ public class GameStateManager : MonoBehaviour
     public void SetState(GameState state)
     {
         currentState = state;
+    }
+
+    /// <summary>
+    /// Restores gameplay state after scene loads or restarts.
+    /// </summary>
+    public void ResetToPlaying()
+    {
+        currentState = GameState.Playing;
+        Time.timeScale = 1f;
     }
 }

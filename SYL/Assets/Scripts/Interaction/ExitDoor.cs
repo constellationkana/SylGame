@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 /// Completes the level when interacted with after its assigned objective unlocks it.
 /// </summary>
 [RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(AudioSource))]
 public class ExitDoor : MonoBehaviour, IInteractable
 {
     [Header("Scene Flow")]
@@ -25,22 +26,18 @@ public class ExitDoor : MonoBehaviour, IInteractable
 
     private void Awake()
     {
-        if (audioSource == null)
-        {
-            audioSource = GetComponent<AudioSource>();
-        }
+        ResolveSceneReferences();
     }
 
     private void Reset()
     {
-        if (audioSource == null)
-        {
-            audioSource = GetComponent<AudioSource>();
-        }
+        ResolveAudioSource();
     }
 
     private void OnEnable()
     {
+        ResolveSceneReferences();
+
         if (objective == null)
         {
             return;
@@ -104,7 +101,7 @@ public class ExitDoor : MonoBehaviour, IInteractable
             yield break;
         }
 
-        Time.timeScale = 1f;
+        GameStateManager.Instance.ResetToPlaying();
         SceneManager.LoadScene(nextSceneName);
     }
 
@@ -126,11 +123,40 @@ public class ExitDoor : MonoBehaviour, IInteractable
 
     private void PlaySound(AudioClip clip)
     {
+        ResolveAudioSource();
+
         if (audioSource == null || clip == null)
         {
             return;
         }
 
         audioSource.PlayOneShot(clip);
+    }
+
+    private void ResolveSceneReferences()
+    {
+        ResolveAudioSource();
+
+        if (objective == null)
+        {
+            objective = FindAnyObjectByType<CollectibleObjective>();
+        }
+
+        if (levelCompleteUI == null)
+        {
+            levelCompleteUI = FindAnyObjectByType<LevelCompleteUI>();
+        }
+    }
+
+    private void ResolveAudioSource()
+    {
+        AudioSource localAudioSource = GetComponent<AudioSource>();
+        if (localAudioSource == null)
+        {
+            localAudioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        localAudioSource.playOnAwake = false;
+        audioSource = localAudioSource;
     }
 }
