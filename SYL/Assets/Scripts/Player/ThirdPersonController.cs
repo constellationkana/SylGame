@@ -35,6 +35,7 @@ public class ThirdPersonController : MonoBehaviour
     private InputAction sprintAction;
     private InputAction jumpAction;
     private InputAction dashAction;
+    private RamDashAbility ramDashAbility;
 
     private float verticalVelocity;
     private float currentRotationVelocity;
@@ -56,10 +57,16 @@ public class ThirdPersonController : MonoBehaviour
         }
     }
 
+    public InputAction DashInputAction
+    {
+        get { return dashAction; }
+    }
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
+        ramDashAbility = GetComponent<RamDashAbility>();
         ResolveCameraTransform();
 
         if (playerInput.actions == null)
@@ -208,9 +215,34 @@ public class ThirdPersonController : MonoBehaviour
 
     private void TryStartDash(Vector3 moveDirection)
     {
-        if (!dashAction.WasPressedThisFrame() || !CanDash())
+        if (!dashAction.WasPressedThisFrame())
         {
             return;
+        }
+
+        if (ramDashAbility != null && ramDashAbility.ShouldDeferNormalDashInput(dashAction))
+        {
+            return;
+        }
+
+        StartDash(moveDirection);
+    }
+
+    public bool TryStartDashFromCurrentInput()
+    {
+        if (moveAction == null)
+        {
+            return StartDash(Vector3.zero);
+        }
+
+        return StartDash(GetCameraRelativeMoveDirection(moveAction.ReadValue<Vector2>()));
+    }
+
+    private bool StartDash(Vector3 moveDirection)
+    {
+        if (!CanDash())
+        {
+            return false;
         }
 
         dashDirection = moveDirection.sqrMagnitude > 0.01f
@@ -219,6 +251,7 @@ public class ThirdPersonController : MonoBehaviour
 
         dashTimeRemaining = dashDuration;
         dashCooldownRemaining = dashCooldown;
+        return true;
     }
 
     private bool CanDash()

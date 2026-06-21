@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
@@ -18,6 +19,17 @@ public class SimpleHUD : MonoBehaviour
     [SerializeField] private Color dashCooldownReadyColor = Color.green;
     [SerializeField] private Color dashCooldownEmptyColor = Color.red;
 
+    [Header("Ram Dash Cooldown")]
+    [SerializeField] private RamDashCooldownUI ramDashCooldownUI;
+    [SerializeField] private Slider ramDashCooldownSlider;
+    [SerializeField] private Image ramDashCooldownFill;
+    [SerializeField] private Color ramDashChargingColor = new Color(1f, 0.6f, 0f);
+    [SerializeField] private Color ramDashReadyColor = new Color(0.4f, 0.85f, 1f);
+    [FormerlySerializedAs("ramDashCooldownDrainingColor")]
+    [SerializeField] private Color ramDashCooldownStartColor = Color.red;
+    [FormerlySerializedAs("ramDashCooldownFillingColor")]
+    [SerializeField] private Color ramDashCooldownEndColor = Color.blue;
+
     [Header("TV Remote Cooldown")]
     [SerializeField] private Slider tvRemoteCooldownSlider;
     [SerializeField] private Image tvRemoteCooldownFill;
@@ -30,6 +42,7 @@ public class SimpleHUD : MonoBehaviour
     [SerializeField] private PlayerHealth playerHealth;
     [SerializeField] private ThirdPersonController playerController;
     [SerializeField] private TVRemoteAbility tvRemoteAbility;
+    [SerializeField] private RamDashAbility ramDashAbility;
 
     private bool isSubscribedToCollectibles;
     private bool isSubscribedToObjective;
@@ -39,6 +52,7 @@ public class SimpleHUD : MonoBehaviour
     {
         SetGameOverPanelVisible(false);
         EnsureDashCooldownSlider();
+        EnsureRamDashCooldownUI();
         EnsureTVRemoteCooldownSlider();
     }
 
@@ -58,6 +72,7 @@ public class SimpleHUD : MonoBehaviour
     private void Update()
     {
         RefreshDashCooldown();
+        RefreshRamDashCooldown();
         RefreshTVRemoteCooldown();
     }
 
@@ -92,6 +107,7 @@ public class SimpleHUD : MonoBehaviour
         RefreshObjective();
         RefreshGameOverPanel();
         RefreshDashCooldown();
+        RefreshRamDashCooldown();
         RefreshTVRemoteCooldown();
     }
 
@@ -125,6 +141,11 @@ public class SimpleHUD : MonoBehaviour
         if (tvRemoteAbility == null)
         {
             tvRemoteAbility = FindAnyObjectByType<TVRemoteAbility>();
+        }
+
+        if (ramDashAbility == null)
+        {
+            ramDashAbility = FindAnyObjectByType<RamDashAbility>();
         }
 
         if (collectibleManager != null && !isSubscribedToCollectibles)
@@ -283,6 +304,22 @@ public class SimpleHUD : MonoBehaviour
         return Mathf.Clamp01(1f - (tvRemoteAbility.CooldownRemaining / cooldownDuration));
     }
 
+    private void RefreshRamDashCooldown()
+    {
+        if (ramDashCooldownUI == null)
+        {
+            return;
+        }
+
+        if (ramDashAbility == null)
+        {
+            ramDashAbility = FindAnyObjectByType<RamDashAbility>();
+        }
+
+        ramDashCooldownUI.SetRamDashAbility(ramDashAbility);
+        ramDashCooldownUI.Refresh();
+    }
+
     private void EnsureDashCooldownSlider()
     {
         if (dashCooldownSlider != null)
@@ -313,6 +350,46 @@ public class SimpleHUD : MonoBehaviour
         tvRemoteCooldownSlider = CreateTVRemoteCooldownSlider();
     }
 
+    private void EnsureRamDashCooldownUI()
+    {
+        if (ramDashCooldownSlider == null)
+        {
+            if (ramDashCooldownUI != null)
+            {
+                ramDashCooldownUI.SetColors(
+                    ramDashChargingColor,
+                    ramDashReadyColor,
+                    ramDashCooldownStartColor,
+                    ramDashCooldownEndColor);
+                return;
+            }
+
+            ramDashCooldownSlider = CreateRamDashCooldownSlider();
+        }
+
+        if (ramDashCooldownFill == null && ramDashCooldownSlider.fillRect != null)
+        {
+            ramDashCooldownFill = ramDashCooldownSlider.fillRect.GetComponent<Image>();
+        }
+
+        if (ramDashCooldownUI == null)
+        {
+            ramDashCooldownUI = ramDashCooldownSlider.GetComponent<RamDashCooldownUI>();
+        }
+
+        if (ramDashCooldownUI == null)
+        {
+            ramDashCooldownUI = ramDashCooldownSlider.gameObject.AddComponent<RamDashCooldownUI>();
+        }
+
+        ramDashCooldownUI.SetSliderReferences(ramDashCooldownSlider, ramDashCooldownFill);
+        ramDashCooldownUI.SetColors(
+            ramDashChargingColor,
+            ramDashReadyColor,
+            ramDashCooldownStartColor,
+            ramDashCooldownEndColor);
+    }
+
     private Slider CreateDashCooldownSlider()
     {
         return CreateCooldownSlider("DashCooldownSlider", new Vector2(20f, -95f), dashCooldownReadyColor, out dashCooldownFill);
@@ -321,6 +398,11 @@ public class SimpleHUD : MonoBehaviour
     private Slider CreateTVRemoteCooldownSlider()
     {
         return CreateCooldownSlider("TVRemoteCooldownSlider", new Vector2(20f, -155f), tvRemoteCooldownReadyColor, out tvRemoteCooldownFill);
+    }
+
+    private Slider CreateRamDashCooldownSlider()
+    {
+        return CreateCooldownSlider("RamDashCooldownSlider", new Vector2(20f, -215f), ramDashReadyColor, out ramDashCooldownFill);
     }
 
     private Slider CreateCooldownSlider(string sliderName, Vector2 anchoredPosition, Color readyColor, out Image fillImage)

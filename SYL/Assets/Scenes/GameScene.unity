@@ -1058,6 +1058,13 @@ MonoBehaviour:
   dashCooldownFill: {fileID: 0}
   dashCooldownReadyColor: {r: 0, g: 1, b: 0, a: 1}
   dashCooldownEmptyColor: {r: 1, g: 0, b: 0, a: 1}
+  ramDashCooldownUI: {fileID: 0}
+  ramDashCooldownSlider: {fileID: 0}
+  ramDashCooldownFill: {fileID: 0}
+  ramDashChargingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  ramDashReadyColor: {r: 0, g: 1, b: 0, a: 1}
+  ramDashCooldownDrainingColor: {r: 1, g: 0, b: 0, a: 1}
+  ramDashCooldownFillingColor: {r: 0, g: 1, b: 1, a: 1}
   tvRemoteCooldownSlider: {fileID: 0}
   tvRemoteCooldownFill: {fileID: 0}
   tvRemoteCooldownReadyColor: {r: 0, g: 0, b: 1, a: 1}
@@ -1067,6 +1074,7 @@ MonoBehaviour:
   playerHealth: {fileID: 1705636956}
   playerController: {fileID: 0}
   tvRemoteAbility: {fileID: 0}
+  ramDashAbility: {fileID: 0}
 --- !u!114 &1577265646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3756,6 +3764,14 @@ PrefabInstance:
     - target: {fileID: -7618660244188365085, guid: bc02332f791e0794a912a2a041bc5a1a, type: 3}
       propertyPath: freezeSucceeded.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: PlayFlash
+      objectReference: {fileID: 0}
+    - target: {fileID: -6780535158149563042, guid: bc02332f791e0794a912a2a041bc5a1a, type: 3}
+      propertyPath: audioSource
+      value: 
+      objectReference: {fileID: 157707220}
+    - target: {fileID: -6780535158149563042, guid: bc02332f791e0794a912a2a041bc5a1a, type: 3}
+      propertyPath: enemyLayers.m_Bits
+      value: 307
       objectReference: {fileID: 0}
     - target: {fileID: 4909362643468318203, guid: bc02332f791e0794a912a2a041bc5a1a, type: 3}
       propertyPath: playerCamera
