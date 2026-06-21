@@ -32,12 +32,29 @@ public class RangedEnemyAttack : MonoBehaviour
 
     private float attackRangeSquared;
     private float nextFireTime;
+    private EnemyTimePauseController timePauseController;
 
     private void Awake()
     {
         AssignDefaultReferences();
         CacheAttackRange();
         SyncPatrolStoppingDistance();
+    }
+
+    private void OnEnable()
+    {
+        if (timePauseController != null)
+        {
+            timePauseController.Resumed.AddListener(HandleTimeResumed);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (timePauseController != null)
+        {
+            timePauseController.Resumed.RemoveListener(HandleTimeResumed);
+        }
     }
 
     private void Reset()
@@ -48,7 +65,7 @@ public class RangedEnemyAttack : MonoBehaviour
 
     private void Update()
     {
-        if (GameStateManager.Instance.IsPaused || enemyDetection == null || !enemyDetection.enabled)
+        if (GameStateManager.Instance.IsPaused || IsTimePaused() || enemyDetection == null || !enemyDetection.enabled)
         {
             return;
         }
@@ -174,6 +191,11 @@ public class RangedEnemyAttack : MonoBehaviour
         {
             enemyPatrol = GetComponent<EnemyPatrol>();
         }
+
+        if (timePauseController == null)
+        {
+            timePauseController = GetComponent<EnemyTimePauseController>();
+        }
     }
 
     private void SyncPatrolStoppingDistance()
@@ -200,6 +222,19 @@ public class RangedEnemyAttack : MonoBehaviour
     private void CacheAttackRange()
     {
         attackRangeSquared = attackRange * attackRange;
+    }
+
+    private bool IsTimePaused()
+    {
+        return timePauseController != null && timePauseController.IsTimePaused;
+    }
+
+    private void HandleTimeResumed()
+    {
+        if (nextFireTime > 0f && timePauseController != null)
+        {
+            nextFireTime += Time.time - timePauseController.LastPauseStartedAt;
+        }
     }
 
     private void OnDrawGizmosSelected()

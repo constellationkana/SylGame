@@ -40,6 +40,7 @@ public class EnemyPatrol : MonoBehaviour
     private float investigationEndTime;
     private Vector3 lastKnownPlayerPosition;
     private NavMeshAgent navMeshAgent;
+    private EnemyTimePauseController timePauseController;
     private float waypointReachDistanceSquared;
 
     /// <summary>
@@ -61,16 +62,36 @@ public class EnemyPatrol : MonoBehaviour
             enemyDetection = GetComponent<EnemyDetection>();
         }
 
+        timePauseController = GetComponent<EnemyTimePauseController>();
+
         ConfigureAgentDefaults();
+    }
+
+    private void OnEnable()
+    {
+        if (timePauseController != null)
+        {
+            timePauseController.Resumed.AddListener(HandleTimeResumed);
+        }
     }
 
     private void OnDisable()
     {
+        if (timePauseController != null)
+        {
+            timePauseController.Resumed.RemoveListener(HandleTimeResumed);
+        }
+
         StopNavigation();
     }
 
     private void Update()
     {
+        if (GameStateManager.Instance.IsPaused || IsTimePaused())
+        {
+            return;
+        }
+
         if (ShouldChasePlayer())
         {
             ChasePlayer();
@@ -441,5 +462,18 @@ public class EnemyPatrol : MonoBehaviour
     private void CacheReachDistance()
     {
         waypointReachDistanceSquared = waypointReachDistance * waypointReachDistance;
+    }
+
+    private bool IsTimePaused()
+    {
+        return timePauseController != null && timePauseController.IsTimePaused;
+    }
+
+    private void HandleTimeResumed()
+    {
+        if (investigationEndTime > 0f && timePauseController != null)
+        {
+            investigationEndTime += Time.time - timePauseController.LastPauseStartedAt;
+        }
     }
 }

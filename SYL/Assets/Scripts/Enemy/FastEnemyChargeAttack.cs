@@ -73,12 +73,24 @@ public class FastEnemyChargeAttack : MonoBehaviour
     private Vector3 chargeDirection;
     private Vector3 chargeStartPosition;
     private Vector3 chargeTargetPosition;
+    private Vector3 warningTargetPosition;
+    private bool hasFrozenWarningTarget;
     private Color[][] originalColors;
+    private EnemyTimePauseController timePauseController;
 
     private void Awake()
     {
         AssignDefaultReferences();
         CacheOriginalColors();
+    }
+
+    private void OnEnable()
+    {
+        if (timePauseController != null)
+        {
+            timePauseController.Paused.AddListener(HandleTimePaused);
+            timePauseController.Resumed.AddListener(HandleTimeResumed);
+        }
     }
 
     private void Reset()
@@ -88,6 +100,12 @@ public class FastEnemyChargeAttack : MonoBehaviour
 
     private void OnDisable()
     {
+        if (timePauseController != null)
+        {
+            timePauseController.Paused.RemoveListener(HandleTimePaused);
+            timePauseController.Resumed.RemoveListener(HandleTimeResumed);
+        }
+
         RestoreOriginalColors();
         RestoreNavigationAfterCharge();
     }
@@ -100,7 +118,7 @@ public class FastEnemyChargeAttack : MonoBehaviour
             return;
         }
 
-        if (GameStateManager.Instance.IsPaused)
+        if (GameStateManager.Instance.IsPaused || IsTimePaused())
         {
             return;
         }
@@ -139,30 +157,6 @@ public class FastEnemyChargeAttack : MonoBehaviour
 
     private void UpdateChasing()
     {
-        if (!CanSeePlayer())
-        {
-            ResetCycle(true);
-            return;
-        }
-
-        if (Time.time >= stateEndTime)
-        {
-            StartWarning();
-        }
-    }
-
-    private void StartWarning()
-    {
-        state = ChargeState.Warning;
-        stateEndTime = Time.time + warningDuration;
-        nextFlashTime = 0f;
-        flashOn = false;
-        StopAgent();
-        SetPatrolEnabled(false);
-    }
-
-    private void UpdateWarning()
-    {
         Transform player = GetVisiblePlayer();
         if (player == null)
         {
@@ -170,12 +164,39 @@ public class FastEnemyChargeAttack : MonoBehaviour
             return;
         }
 
-        FacePosition(player.position);
+        if (Time.time >= stateEndTime)
+        {
+            StartWarning(player.position);
+        }
+    }
+
+    private void StartWarning(Vector3 targetPosition)
+    {
+        state = ChargeState.Warning;
+        stateEndTime = Time.time + warningDuration;
+        nextFlashTime = 0f;
+        flashOn = false;
+        warningTargetPosition = targetPosition;
+        StopAgent();
+        SetPatrolEnabled(false);
+    }
+
+    private void UpdateWarning()
+    {
+        Vector3 targetPosition;
+        if (!TryGetWarningTargetPosition(out targetPosition))
+        {
+            ResetCycle(true);
+            return;
+        }
+
+        warningTargetPosition = targetPosition;
+        FacePosition(targetPosition);
         UpdateWarningFlash();
 
         if (Time.time >= stateEndTime)
         {
-            StartCharge(player.position);
+            StartCharge(targetPosition);
         }
     }
 
@@ -197,6 +218,7 @@ public class FastEnemyChargeAttack : MonoBehaviour
         chargeTargetPosition = flatTargetPosition;
         state = ChargeState.Charging;
         stateEndTime = Time.time + chargeDuration;
+        hasFrozenWarningTarget = false;
 
         PlayChargeFeedback();
         StopAgent();
@@ -246,6 +268,7 @@ public class FastEnemyChargeAttack : MonoBehaviour
         stateEndTime = 0f;
         nextFlashTime = 0f;
         flashOn = false;
+        hasFrozenWarningTarget = false;
     }
 
     private void UpdateWarningFlash()
@@ -445,6 +468,11 @@ public class FastEnemyChargeAttack : MonoBehaviour
             audioSource = GetComponentInChildren<AudioSource>();
         }
 
+        if (timePauseController == null)
+        {
+            timePauseController = GetComponent<EnemyTimePauseController>();
+        }
+
         if (warningRenderers == null || warningRenderers.Length == 0)
         {
             warningRenderers = GetComponentsInChildren<Renderer>();
@@ -561,5 +589,65 @@ public class FastEnemyChargeAttack : MonoBehaviour
         warningFlashInterval = Mathf.Max(0.01f, warningFlashInterval);
         cameraShakeDuration = Mathf.Max(0f, cameraShakeDuration);
         cameraShakeMagnitude = Mathf.Max(0f, cameraShakeMagnitude);
+    }
+
+    private bool TryGetWarningTargetPosition(out Vector3 targetPosition)
+    {
+        if (hasFrozenWarningTarget)
+        {
+            targetPosition = warningTargetPosition;
+            return true;
+        }
+
+        Transform player = GetVisiblePlayer();
+        if (player == null)
+        {
+            targetPosition = default;
+            return false;
+        }
+
+        targetPosition = player.position;
+        return true;
+    }
+
+    private bool IsTimePaused()
+    {
+        return timePauseController != null && timePauseController.IsTimePaused;
+    }
+
+    private void HandleTimePaused()
+    {
+        if (state != ChargeState.Warning)
+        {
+            return;
+        }
+
+        Transform player = GetVisiblePlayer();
+        if (player != null)
+        {
+            warningTargetPosition = player.position;
+        }
+
+        hasFrozenWarningTarget = true;
+    }
+
+    private void HandleTimeResumed()
+    {
+        if (timePauseController == null)
+        {
+            return;
+        }
+
+        float pauseDuration = Time.time - timePauseController.LastPauseStartedAt;
+
+        if (stateEndTime > 0f)
+        {
+            stateEndTime += pauseDuration;
+        }
+
+        if (nextFlashTime > 0f)
+        {
+            nextFlashTime += pauseDuration;
+        }
     }
 }

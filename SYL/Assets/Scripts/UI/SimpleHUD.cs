@@ -18,11 +18,18 @@ public class SimpleHUD : MonoBehaviour
     [SerializeField] private Color dashCooldownReadyColor = Color.green;
     [SerializeField] private Color dashCooldownEmptyColor = Color.red;
 
+    [Header("TV Remote Cooldown")]
+    [SerializeField] private Slider tvRemoteCooldownSlider;
+    [SerializeField] private Image tvRemoteCooldownFill;
+    [SerializeField] private Color tvRemoteCooldownReadyColor = Color.blue;
+    [SerializeField] private Color tvRemoteCooldownEmptyColor = Color.red;
+
     [Header("Scene References")]
     [SerializeField] private CollectibleManager collectibleManager;
     [SerializeField] private CollectibleObjective collectibleObjective;
     [SerializeField] private PlayerHealth playerHealth;
     [SerializeField] private ThirdPersonController playerController;
+    [SerializeField] private TVRemoteAbility tvRemoteAbility;
 
     private bool isSubscribedToCollectibles;
     private bool isSubscribedToObjective;
@@ -32,6 +39,7 @@ public class SimpleHUD : MonoBehaviour
     {
         SetGameOverPanelVisible(false);
         EnsureDashCooldownSlider();
+        EnsureTVRemoteCooldownSlider();
     }
 
     private void OnEnable()
@@ -50,6 +58,7 @@ public class SimpleHUD : MonoBehaviour
     private void Update()
     {
         RefreshDashCooldown();
+        RefreshTVRemoteCooldown();
     }
 
     private void OnDisable()
@@ -83,6 +92,7 @@ public class SimpleHUD : MonoBehaviour
         RefreshObjective();
         RefreshGameOverPanel();
         RefreshDashCooldown();
+        RefreshTVRemoteCooldown();
     }
 
     private void ConnectToSceneSystems(bool showWarnings)
@@ -110,6 +120,11 @@ public class SimpleHUD : MonoBehaviour
         if (playerController == null)
         {
             playerController = FindAnyObjectByType<ThirdPersonController>();
+        }
+
+        if (tvRemoteAbility == null)
+        {
+            tvRemoteAbility = FindAnyObjectByType<TVRemoteAbility>();
         }
 
         if (collectibleManager != null && !isSubscribedToCollectibles)
@@ -231,6 +246,43 @@ public class SimpleHUD : MonoBehaviour
         }
     }
 
+    private void RefreshTVRemoteCooldown()
+    {
+        if (tvRemoteCooldownSlider == null)
+        {
+            return;
+        }
+
+        if (tvRemoteAbility == null)
+        {
+            tvRemoteAbility = FindAnyObjectByType<TVRemoteAbility>();
+        }
+
+        float progress = GetTVRemoteCooldownProgress();
+        tvRemoteCooldownSlider.SetValueWithoutNotify(progress);
+
+        if (tvRemoteCooldownFill != null)
+        {
+            tvRemoteCooldownFill.color = Color.Lerp(tvRemoteCooldownEmptyColor, tvRemoteCooldownReadyColor, progress);
+        }
+    }
+
+    private float GetTVRemoteCooldownProgress()
+    {
+        if (tvRemoteAbility == null)
+        {
+            return 1f;
+        }
+
+        float cooldownDuration = tvRemoteAbility.CooldownDuration;
+        if (cooldownDuration <= 0f)
+        {
+            return 1f;
+        }
+
+        return Mathf.Clamp01(1f - (tvRemoteAbility.CooldownRemaining / cooldownDuration));
+    }
+
     private void EnsureDashCooldownSlider()
     {
         if (dashCooldownSlider != null)
@@ -246,16 +298,41 @@ public class SimpleHUD : MonoBehaviour
         dashCooldownSlider = CreateDashCooldownSlider();
     }
 
+    private void EnsureTVRemoteCooldownSlider()
+    {
+        if (tvRemoteCooldownSlider != null)
+        {
+            if (tvRemoteCooldownFill == null && tvRemoteCooldownSlider.fillRect != null)
+            {
+                tvRemoteCooldownFill = tvRemoteCooldownSlider.fillRect.GetComponent<Image>();
+            }
+
+            return;
+        }
+
+        tvRemoteCooldownSlider = CreateTVRemoteCooldownSlider();
+    }
+
     private Slider CreateDashCooldownSlider()
     {
-        GameObject sliderObject = new GameObject("DashCooldownSlider", typeof(RectTransform), typeof(Slider));
+        return CreateCooldownSlider("DashCooldownSlider", new Vector2(20f, -95f), dashCooldownReadyColor, out dashCooldownFill);
+    }
+
+    private Slider CreateTVRemoteCooldownSlider()
+    {
+        return CreateCooldownSlider("TVRemoteCooldownSlider", new Vector2(20f, -155f), tvRemoteCooldownReadyColor, out tvRemoteCooldownFill);
+    }
+
+    private Slider CreateCooldownSlider(string sliderName, Vector2 anchoredPosition, Color readyColor, out Image fillImage)
+    {
+        GameObject sliderObject = new GameObject(sliderName, typeof(RectTransform), typeof(Slider));
         sliderObject.transform.SetParent(transform, false);
 
         RectTransform sliderRect = sliderObject.GetComponent<RectTransform>();
         sliderRect.anchorMin = new Vector2(0f, 1f);
         sliderRect.anchorMax = new Vector2(0f, 1f);
         sliderRect.pivot = new Vector2(0f, 1f);
-        sliderRect.anchoredPosition = new Vector2(20f, -95f);
+        sliderRect.anchoredPosition = anchoredPosition;
         sliderRect.sizeDelta = new Vector2(180f, 16f);
 
         GameObject backgroundObject = new GameObject("Background", typeof(RectTransform), typeof(Image));
@@ -288,8 +365,8 @@ public class SimpleHUD : MonoBehaviour
         fillRect.offsetMin = Vector2.zero;
         fillRect.offsetMax = Vector2.zero;
 
-        dashCooldownFill = fillObject.GetComponent<Image>();
-        dashCooldownFill.color = dashCooldownReadyColor;
+        fillImage = fillObject.GetComponent<Image>();
+        fillImage.color = readyColor;
 
         Slider slider = sliderObject.GetComponent<Slider>();
         slider.minValue = 0f;
@@ -298,7 +375,7 @@ public class SimpleHUD : MonoBehaviour
         slider.interactable = false;
         slider.transition = Selectable.Transition.None;
         slider.fillRect = fillRect;
-        slider.targetGraphic = dashCooldownFill;
+        slider.targetGraphic = fillImage;
 
         return slider;
     }

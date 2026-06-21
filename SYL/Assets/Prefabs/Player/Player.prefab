@@ -1075,6 +1075,7 @@ GameObject:
   - component: {fileID: 5173855349721469826}
   - component: {fileID: 8511704019578071916}
   - component: {fileID: 6198144336471312686}
+  - component: {fileID: -7618660244188365085}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1304,3 +1305,45 @@ MonoBehaviour:
   attackDamage: 1
   audioSource: {fileID: 6623121560438091883}
   attackClip: {fileID: 8300000, guid: a171067e7b21dcb418597905db9164e0, type: 3}
+--- !u!114 &-7618660244188365085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8403426390918206561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7908654620f19ff45b759a6a596c60b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TVRemoteAbility
+  activateAction: {fileID: 0}
+  keyboardFallbackKey: 31
+  cooldownDuration: 6
+  freezeDuration: 2.5
+  range: 8
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 307
+  triggerInteraction: 1
+  audioSource: {fileID: 0}
+  freezeSuccessSound: {fileID: 8300000, guid: 6591ddfe3b323854ca59d8441137f364, type: 3}
+  freezeFailureSound: {fileID: 0}
+  freezeSucceeded:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7319774522041318769, guid: 9a8453bf2fe165e46b96c2ff01ab071e, type: 3}
+        m_TargetAssemblyTypeName: FreezeFlashUI, Assembly-CSharp
+        m_MethodName: PlayFlash
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  freezeFailed:
+    m_PersistentCalls:
+      m_Calls: []
