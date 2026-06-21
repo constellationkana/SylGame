@@ -57,6 +57,8 @@ public class PauseMenu : MonoBehaviour
         }
 
         activeInstance = this;
+        transform.SetParent(null);
+        DontDestroyOnLoad(gameObject);
         ResetPauseStateForSceneLoad();
     }
 
