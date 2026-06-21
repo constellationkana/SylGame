@@ -100,9 +100,9 @@ public class FreezeFlashUI : MonoBehaviour
             return authoritativeInstance;
         }
 
-        FreezeFlashUI[] instances =
-        Object.FindObjectsByType<FreezeFlashUI>(
-        FindObjectsInactive.Include);
+        FreezeFlashUI[] instances = FindObjectsByType<FreezeFlashUI>(
+            FindObjectsInactive.Include,
+            FindObjectsSortMode.None);
         authoritativeInstance = SelectBestInstance(instances);
 
         if (authoritativeInstance != null)
@@ -119,18 +119,11 @@ public class FreezeFlashUI : MonoBehaviour
 
     private static FreezeFlashUI SelectBestInstance(FreezeFlashUI[] instances)
     {
-        FreezeFlashUI fallback = null;
-
         foreach (FreezeFlashUI instance in instances)
         {
             if (instance == null)
             {
                 continue;
-            }
-
-            if (fallback == null)
-            {
-                fallback = instance;
             }
 
             if (IsRenderable(instance))
@@ -139,7 +132,7 @@ public class FreezeFlashUI : MonoBehaviour
             }
         }
 
-        return fallback;
+        return null;
     }
 
     private static bool IsRenderable(FreezeFlashUI instance)
