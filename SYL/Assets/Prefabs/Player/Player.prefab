@@ -1076,6 +1076,7 @@ GameObject:
   - component: {fileID: 8511704019578071916}
   - component: {fileID: 6198144336471312686}
   - component: {fileID: -7618660244188365085}
+  - component: {fileID: -6780535158149563042}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1345,5 +1346,59 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   freezeFailed:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &-6780535158149563042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8403426390918206561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d23f2acb1b84d74a9d4cbb0cf0aa274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RamDashAbility
+  chargeAction: {fileID: 5965300402317573218, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  keyboardFallbackKey: 0
+  chargeTime: 0.75
+  dashSpeed: 30
+  dashDuration: 0.28
+  damage: 1
+  cooldown: 2
+  requireGrounded: 1
+  hitRadius: 0.75
+  hitOffset: {x: 0, y: 0.9, z: 0}
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 307
+  triggerInteraction: 2
+  ignoreEnemyCollisionsDuringDash: 1
+  iframeStartDelay: 0
+  iframeDuration: 0.35
+  playerCameraController: {fileID: 0}
+  cameraShakeIntensity: 0.12
+  cameraShakeDuration: 0.4
+  audioSource: {fileID: 0}
+  readySound: {fileID: 8300000, guid: fa596c814e803c24b82e1c991c94dd2b, type: 3}
+  ramDashStartSound: {fileID: 8300000, guid: babb45bacb0e68548a87fed483b87013, type: 3}
+  ramDashHitEnemySound: {fileID: 8300000, guid: 124bcca800d45434dbff68110ae2e006, type: 3}
+  chargeStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  chargeCanceled:
+    m_PersistentCalls:
+      m_Calls: []
+  fullyCharged:
+    m_PersistentCalls:
+      m_Calls: []
+  dashStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  dashEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  enemyHit:
     m_PersistentCalls:
       m_Calls: []

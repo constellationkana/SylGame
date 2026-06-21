@@ -23,6 +23,7 @@ public class PlayerHealth : MonoBehaviour
 
     private int currentHealth;
     private bool isDead;
+    private float invulnerableUntilTime;
 
     /// <summary>
     /// Raised whenever the player's current health changes.
@@ -48,6 +49,11 @@ public class PlayerHealth : MonoBehaviour
     public bool IsDead
     {
         get { return isDead; }
+    }
+
+    public bool IsInvulnerable
+    {
+        get { return Time.time < invulnerableUntilTime; }
     }
 
     private void Awake()
@@ -107,7 +113,7 @@ public class PlayerHealth : MonoBehaviour
     /// <param name="amount">Amount of damage requested. Negative values are ignored.</param>
     public void TakeDamage(int amount)
     {
-        if (isDead)
+        if (isDead || IsInvulnerable)
         {
             return;
         }
@@ -133,6 +139,17 @@ public class PlayerHealth : MonoBehaviour
     {
         Scene activeScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(activeScene.name);
+    }
+
+    public void GrantInvulnerability(float duration)
+    {
+        float durationToApply = Mathf.Max(0f, duration);
+        if (durationToApply <= 0f)
+        {
+            return;
+        }
+
+        invulnerableUntilTime = Mathf.Max(invulnerableUntilTime, Time.time + durationToApply);
     }
 
     private void Die()
