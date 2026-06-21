@@ -21,6 +21,7 @@ public class EnemyContactDamage : MonoBehaviour
     private bool playerInAttackRange;
     private float nextDamageTime;
     private float attackRangeSquared;
+    private EnemyTimePauseController timePauseController;
 
     private void Awake()
     {
@@ -30,11 +31,29 @@ public class EnemyContactDamage : MonoBehaviour
         {
             enemyDetection = GetComponent<EnemyDetection>();
         }
+
+        timePauseController = GetComponent<EnemyTimePauseController>();
+    }
+
+    private void OnEnable()
+    {
+        if (timePauseController != null)
+        {
+            timePauseController.Resumed.AddListener(HandleTimeResumed);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (timePauseController != null)
+        {
+            timePauseController.Resumed.RemoveListener(HandleTimeResumed);
+        }
     }
 
     private void Update()
     {
-        if (GameStateManager.Instance.IsPaused)
+        if (GameStateManager.Instance.IsPaused || IsTimePaused())
         {
             return;
         }
@@ -122,6 +141,19 @@ public class EnemyContactDamage : MonoBehaviour
     private void CacheAttackRange()
     {
         attackRangeSquared = attackRange * attackRange;
+    }
+
+    private bool IsTimePaused()
+    {
+        return timePauseController != null && timePauseController.IsTimePaused;
+    }
+
+    private void HandleTimeResumed()
+    {
+        if (nextDamageTime > 0f && timePauseController != null)
+        {
+            nextDamageTime += Time.time - timePauseController.LastPauseStartedAt;
+        }
     }
 
     private void OnDrawGizmosSelected()

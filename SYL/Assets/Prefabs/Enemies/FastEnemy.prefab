@@ -867,6 +867,7 @@ GameObject:
   - component: {fileID: 81457034229860832}
   - component: {fileID: 9090219190059051669}
   - component: {fileID: 6123048209136401221}
+  - component: {fileID: 307440324785031152}
   m_Layer: 0
   m_Name: FastEnemy
   m_TagString: Untagged
@@ -1136,6 +1137,25 @@ MonoBehaviour:
   cameraShakeDuration: 0.12
   cameraShakeMagnitude: 0.12
   warningRenderers: []
+--- !u!114 &307440324785031152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7957357517602350538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5107db7d7512347bd3b64b3207d980, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyTimePauseController
+  navMeshAgent: {fileID: 5723507333669324000}
+  paused:
+    m_PersistentCalls:
+      m_Calls: []
+  resumed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8351430288835125068
 GameObject:
   m_ObjectHideFlags: 0

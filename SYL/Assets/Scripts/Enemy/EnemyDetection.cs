@@ -22,6 +22,7 @@ public class EnemyDetection : MonoBehaviour
     private float detectionRadiusSquared;
     private Transform cachedPlayerTransform;
     private PlayerHealth cachedPlayerHealth;
+    private EnemyTimePauseController timePauseController;
 
     /// <summary>
     /// Gets whether the player is currently within detection range and line of sight.
@@ -42,10 +43,16 @@ public class EnemyDetection : MonoBehaviour
     private void Awake()
     {
         CacheDetectionRadius();
+        timePauseController = GetComponent<EnemyTimePauseController>();
     }
 
     private void Update()
     {
+        if (GameStateManager.Instance.IsPaused || IsTimePaused())
+        {
+            return;
+        }
+
         if (player == null || !IsPlayerAlive())
         {
             if (playerDetected)
@@ -145,6 +152,11 @@ public class EnemyDetection : MonoBehaviour
     private void CacheDetectionRadius()
     {
         detectionRadiusSquared = detectionRadius * detectionRadius;
+    }
+
+    private bool IsTimePaused()
+    {
+        return timePauseController != null && timePauseController.IsTimePaused;
     }
 
     private void OnDrawGizmosSelected()
