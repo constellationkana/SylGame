@@ -1545,6 +1545,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FreezeFlash
       objectReference: {fileID: 0}
+    - target: {fileID: 3465694571534298108, guid: 9a8453bf2fe165e46b96c2ff01ab071e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4654966183136809576, guid: 9a8453bf2fe165e46b96c2ff01ab071e, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

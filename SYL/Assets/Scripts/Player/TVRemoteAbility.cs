@@ -110,8 +110,9 @@ public class TVRemoteAbility : MonoBehaviour
             StartCoroutine(FreezeTarget(target));
             EnemyFrozen?.Invoke(target);
         }
-        
+
         PlaySound(freezeSuccessSound);
+        FreezeFlashUI.PlayGlobalFlash();
         freezeSucceeded?.Invoke();
         return true;
     }
