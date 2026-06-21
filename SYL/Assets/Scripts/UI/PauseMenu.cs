@@ -12,6 +12,7 @@ using UnityEngine.UI;
 public class PauseMenu : MonoBehaviour
 {
     private const string MainMenuSceneName = "MainMenu";
+    private const float SceneLoadPauseInputBlockDuration = 0.2f;
 
     private static PauseMenu activeInstance;
 
@@ -23,6 +24,13 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private string pauseTitle = "Paused";
 
     private bool isPaused;
+    private float pauseInputBlockedUntil;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        activeInstance = null;
+    }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void BootstrapPauseMenu()
@@ -44,23 +52,27 @@ public class PauseMenu : MonoBehaviour
     {
         if (activeInstance != null && activeInstance != this)
         {
-            enabled = false;
+            Destroy(gameObject);
             return;
         }
 
         activeInstance = this;
-        Time.timeScale = 1f;
+        transform.SetParent(null);
+        DontDestroyOnLoad(gameObject);
+        ResetPauseStateForSceneLoad();
     }
 
     private void Start()
     {
         EnsurePausePanel();
         ConfigurePausePanel();
-        SetPausePanelVisible(false);
+        ResetPauseStateForSceneLoad();
     }
 
     private void OnEnable()
     {
+        SceneManager.sceneLoaded += HandleSceneLoaded;
+
         if (resumeButton != null)
         {
             resumeButton.onClick.AddListener(Resume);
@@ -74,6 +86,8 @@ public class PauseMenu : MonoBehaviour
 
     private void OnDisable()
     {
+        SceneManager.sceneLoaded -= HandleSceneLoaded;
+
         if (resumeButton != null)
         {
             resumeButton.onClick.RemoveListener(Resume);
@@ -100,6 +114,11 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
+        if (activeInstance != this || !IsGameplayScene() || IsSceneLoadInputBlocked())
+        {
+            return;
+        }
+
         if (Keyboard.current == null || !Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             return;
@@ -127,11 +146,13 @@ public class PauseMenu : MonoBehaviour
     /// </summary>
     public void Pause()
     {
-        if (!GameStateManager.Instance.IsPlaying)
+        if (!IsGameplayScene() || IsSceneLoadInputBlocked() || !GameStateManager.Instance.IsPlaying)
         {
             return;
         }
 
+        EnsurePausePanel();
+        ConfigurePausePanel();
         isPaused = true;
         GameStateManager.Instance.SetState(GameState.Paused);
         Time.timeScale = 0f;
@@ -149,6 +170,14 @@ public class PauseMenu : MonoBehaviour
     /// </summary>
     public void Resume()
     {
+        if (!IsGameplayScene())
+        {
+            isPaused = false;
+            SetPausePanelVisible(false);
+            UnlockCursor();
+            return;
+        }
+
         if (!isPaused && !GameStateManager.Instance.IsPaused)
         {
             return;
@@ -173,10 +202,42 @@ public class PauseMenu : MonoBehaviour
     {
     }
 
+    private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == MainMenuSceneName)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        EnsurePausePanel();
+        ConfigurePausePanel();
+        ResetPauseStateForSceneLoad();
+    }
+
+    private void ResetPauseStateForSceneLoad()
+    {
+        isPaused = false;
+        pauseInputBlockedUntil = Time.unscaledTime + SceneLoadPauseInputBlockDuration;
+        Time.timeScale = 1f;
+        SetPausePanelVisible(false);
+
+        if (!IsGameplayScene())
+        {
+            UnlockCursor();
+            return;
+        }
+
+        GameStateManager.Instance.ResetToPlaying();
+        LockCursor();
+    }
+
     private void EnsurePausePanel()
     {
         if (pausePanel != null)
         {
+            ResolvePausePanelReferences();
+            EnsureEventSystem();
             return;
         }
 
@@ -192,6 +253,8 @@ public class PauseMenu : MonoBehaviour
 
     private void ConfigurePausePanel()
     {
+        ResolvePausePanelReferences();
+
         if (titleText != null)
         {
             titleText.text = pauseTitle;
@@ -308,6 +371,47 @@ public class PauseMenu : MonoBehaviour
         return button;
     }
 
+    private void ResolvePausePanelReferences()
+    {
+        if (pausePanel == null)
+        {
+            return;
+        }
+
+        if (titleText == null)
+        {
+            Transform titleTransform = pausePanel.transform.Find("Title");
+            if (titleTransform != null)
+            {
+                titleText = titleTransform.GetComponent<TMP_Text>();
+            }
+        }
+
+        if (resumeButton == null)
+        {
+            resumeButton = FindChildComponent<Button>(pausePanel.transform, "ResumeButton");
+        }
+
+        if (quitButton == null)
+        {
+            quitButton = FindChildComponent<Button>(pausePanel.transform, "QuitButton");
+        }
+    }
+
+    private T FindChildComponent<T>(Transform parent, string childName) where T : Component
+    {
+        T[] components = parent.GetComponentsInChildren<T>(true);
+        foreach (T component in components)
+        {
+            if (component.name == childName)
+            {
+                return component;
+            }
+        }
+
+        return null;
+    }
+
     private void SetPausePanelVisible(bool isVisible)
     {
         if (pausePanel != null)
@@ -326,5 +430,15 @@ public class PauseMenu : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    private bool IsGameplayScene()
+    {
+        return SceneManager.GetActiveScene().name != MainMenuSceneName;
+    }
+
+    private bool IsSceneLoadInputBlocked()
+    {
+        return Time.unscaledTime < pauseInputBlockedUntil;
     }
 }

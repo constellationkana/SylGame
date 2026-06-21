@@ -409,7 +409,7 @@ public class FastEnemyChargeAttack : MonoBehaviour
             }
         }
 
-        playerCameraController = FindObjectOfType<PlayerCameraController>();
+        playerCameraController = FindAnyObjectByType<PlayerCameraController>();
         return playerCameraController;
     }
 

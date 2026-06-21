@@ -3565,10 +3565,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 278886788}
     - target: {fileID: 2611900153825864516, guid: e65f8429add132a45866c9348ed35627, type: 3}
-      propertyPath: audioSource
-      value: 
-      objectReference: {fileID: 157707220}
-    - target: {fileID: 2611900153825864516, guid: e65f8429add132a45866c9348ed35627, type: 3}
       propertyPath: nextSceneName
       value: Level3
       objectReference: {fileID: 0}
